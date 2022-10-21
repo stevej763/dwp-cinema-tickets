@@ -26,9 +26,9 @@ public class OrderValidator {
         return ticketOrder;
     }
 
-    private void checkThereIsAtLeastOneAdultForEveryInfant(TicketOrder ticketOrder) {
-        if(ticketOrder.getInfantTicketCountAsLong() > ticketOrder.getAdultTicketCountAsLong()) {
-            String message = "Invalid order: there must be at least one adult for every infant";
+    private void checkRequestHasAtLeastOneValidTicket(long totalNumberOfTickets) {
+        if (totalNumberOfTickets < 1) {
+            String message = "Invalid order: cannot process order with no tickets";
             throw new InvalidPurchaseException(message);
         }
     }
@@ -40,16 +40,16 @@ public class OrderValidator {
         }
     }
 
-    private void checkRequestHasAtLeastOneValidTicket(long totalNumberOfTickets) {
-        if (totalNumberOfTickets < 1) {
-            String message = "Invalid order: cannot process order with no tickets";
+    private void checkRequestDoesNotExceedMaximumTicketOrderCount(long totalNumberOfTickets) {
+        if (totalNumberOfTickets > MAXIMUM_TICKET_BOOKING_ALLOWANCE) {
+            String message = String.format("Invalid order: You cannot purchase more than %s tickets in one order", MAXIMUM_TICKET_BOOKING_ALLOWANCE);
             throw new InvalidPurchaseException(message);
         }
     }
 
-    private void checkRequestDoesNotExceedMaximumTicketOrderCount(long totalNumberOfTickets) {
-        if (totalNumberOfTickets > MAXIMUM_TICKET_BOOKING_ALLOWANCE) {
-            String message = String.format("Invalid order: You cannot purchase more than %s tickets in one order", MAXIMUM_TICKET_BOOKING_ALLOWANCE);
+    private void checkThereIsAtLeastOneAdultForEveryInfant(TicketOrder ticketOrder) {
+        if(ticketOrder.getInfantTicketCountAsLong() > ticketOrder.getAdultTicketCountAsLong()) {
+            String message = "Invalid order: there must be at least one adult for every infant";
             throw new InvalidPurchaseException(message);
         }
     }

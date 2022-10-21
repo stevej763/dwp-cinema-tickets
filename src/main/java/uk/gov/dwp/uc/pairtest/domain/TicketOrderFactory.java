@@ -9,20 +9,29 @@ import static uk.gov.dwp.uc.pairtest.domain.TicketTypeRequest.Type.*;
 public class TicketOrderFactory {
 
     public TicketOrder toTicketOrder(List<TicketTypeRequest> ticketTypeRequests) {
-        TicketCount adultTicketCount = getTicketCountFor(ticketTypeRequests, ADULT);
-        TicketCount childTicketCount = getTicketCountFor(ticketTypeRequests, CHILD);
-        TicketCount infantTicketCount = getTicketCountFor(ticketTypeRequests, INFANT);
+        TicketCount adultTicketCount = getTicketCountFor(ADULT, ticketTypeRequests);
+        TicketCount childTicketCount = getTicketCountFor(CHILD, ticketTypeRequests);
+        TicketCount infantTicketCount = getTicketCountFor(INFANT, ticketTypeRequests);
         return new TicketOrder(adultTicketCount, childTicketCount, infantTicketCount);
     }
 
-    private TicketCount getTicketCountFor(List<TicketTypeRequest> ticketTypeRequests, Type type) {
-        List<TicketTypeRequest> filteredRequests = ticketTypeRequests.stream()
+    private TicketCount getTicketCountFor(Type type, List<TicketTypeRequest> ticketTypeRequests) {
+        List<TicketTypeRequest> filteredRequests = filterRequestsForType(type, ticketTypeRequests);
+        long sumOfTickets = getSumOfTickets(filteredRequests);
+        return new TicketCount(sumOfTickets);
+    }
+
+    private List<TicketTypeRequest> filterRequestsForType(Type type, List<TicketTypeRequest> ticketTypeRequests) {
+        return ticketTypeRequests.stream()
                 .filter(request -> isTicketTypeOf(type, request))
                 .collect(toList());
-        long sumOfTickets = filteredRequests.stream()
+    }
+
+    private long getSumOfTickets(List<TicketTypeRequest> filteredRequests) {
+        return filteredRequests.stream()
                 .mapToInt(TicketTypeRequest::getNumberOfTickets)
-                .summaryStatistics().getSum();
-        return new TicketCount(sumOfTickets);
+                .summaryStatistics()
+                .getSum();
     }
 
     private boolean isTicketTypeOf(Type type, TicketTypeRequest request) {

@@ -13,7 +13,7 @@ public class PaymentCalculatorTest {
     public void canCalculateCostOfOneAdultTicket() {
         PaymentCalculator underTest = new PaymentCalculator();
 
-        OrderTotal result = underTest.calculatePayment(aTicketOrder(1, 0, 0));
+        OrderTotal result = underTest.calculateOrderTotalPrice(aTicketOrder(1, 0, 0));
 
         OrderTotal expectedOrderTotal = new OrderTotal(20);
         assertThat(result, is(expectedOrderTotal));
@@ -23,7 +23,7 @@ public class PaymentCalculatorTest {
     public void canCalculateCostOfMultipleAdultTickets() {
         PaymentCalculator underTest = new PaymentCalculator();
 
-        OrderTotal result = underTest.calculatePayment(aTicketOrder(20, 0, 0));
+        OrderTotal result = underTest.calculateOrderTotalPrice(aTicketOrder(20, 0, 0));
 
         OrderTotal expectedOrderTotal = new OrderTotal(400);
         assertThat(result, is(expectedOrderTotal));
@@ -33,7 +33,7 @@ public class PaymentCalculatorTest {
     public void canCalculateCostOfOneChildTicket() {
         PaymentCalculator underTest = new PaymentCalculator();
 
-        OrderTotal result = underTest.calculatePayment(aTicketOrder(0, 1, 0));
+        OrderTotal result = underTest.calculateOrderTotalPrice(aTicketOrder(0, 1, 0));
 
         OrderTotal expectedOrderTotal = new OrderTotal(10);
         assertThat(result, is(expectedOrderTotal));
@@ -43,7 +43,7 @@ public class PaymentCalculatorTest {
     public void canCalculateCostOfMultipleChildTickets() {
         PaymentCalculator underTest = new PaymentCalculator();
 
-        OrderTotal result = underTest.calculatePayment(aTicketOrder(0, 20, 0));
+        OrderTotal result = underTest.calculateOrderTotalPrice(aTicketOrder(0, 20, 0));
 
         OrderTotal expectedOrderTotal = new OrderTotal(200);
         assertThat(result, is(expectedOrderTotal));
@@ -53,7 +53,7 @@ public class PaymentCalculatorTest {
     public void infantTicketsDoNotIncreasePrice() {
         PaymentCalculator underTest = new PaymentCalculator();
 
-        OrderTotal result = underTest.calculatePayment(aTicketOrder(0, 0, 20));
+        OrderTotal result = underTest.calculateOrderTotalPrice(aTicketOrder(0, 0, 20));
 
         OrderTotal expectedOrderTotal = new OrderTotal(0);
         assertThat(result, is(expectedOrderTotal));
@@ -63,7 +63,7 @@ public class PaymentCalculatorTest {
     public void canCalculatePriceForAMixOfDifferentTicketTypes() {
         PaymentCalculator underTest = new PaymentCalculator();
 
-        OrderTotal result = underTest.calculatePayment(aTicketOrder(10, 5, 5));
+        OrderTotal result = underTest.calculateOrderTotalPrice(aTicketOrder(10, 5, 5));
 
         OrderTotal expectedOrderTotal = new OrderTotal(250);
         assertThat(result, is(expectedOrderTotal));

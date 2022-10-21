@@ -1,9 +1,8 @@
 package uk.gov.dwp.uc.pairtest.domain;
 
-import org.apache.commons.lang3.builder.EqualsBuilder;
-import org.apache.commons.lang3.builder.HashCodeBuilder;
-import org.apache.commons.lang3.builder.ToStringBuilder;
-
+import static org.apache.commons.lang3.builder.EqualsBuilder.reflectionEquals;
+import static org.apache.commons.lang3.builder.HashCodeBuilder.reflectionHashCode;
+import static org.apache.commons.lang3.builder.ToStringBuilder.reflectionToString;
 import static org.apache.commons.lang3.builder.ToStringStyle.SHORT_PREFIX_STYLE;
 
 public class TicketOrder {
@@ -30,15 +29,15 @@ public class TicketOrder {
     }
 
     public Long getAdultTicketCountAsLong() {
-        return adultTicketCount.getCount();
+        return adultTicketCount.getNumberOfTickets();
     }
 
     public Long getChildTicketCountAsLong() {
-        return childTicketCount.getCount();
+        return childTicketCount.getNumberOfTickets();
     }
 
     public Long getInfantTicketCountAsLong() {
-        return infantTicketCount.getCount();
+        return infantTicketCount.getNumberOfTickets();
     }
 
     public Long getTotalTicketCount() {
@@ -51,16 +50,16 @@ public class TicketOrder {
 
     @Override
     public boolean equals(Object obj) {
-        return EqualsBuilder.reflectionEquals(this, obj);
+        return reflectionEquals(this, obj);
     }
 
     @Override
     public int hashCode() {
-        return HashCodeBuilder.reflectionHashCode(this);
+        return reflectionHashCode(this);
     }
 
     @Override
     public String toString() {
-        return ToStringBuilder.reflectionToString(this, SHORT_PREFIX_STYLE);
+        return reflectionToString(this, SHORT_PREFIX_STYLE);
     }
 }

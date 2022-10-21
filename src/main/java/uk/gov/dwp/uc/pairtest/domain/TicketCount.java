@@ -7,14 +7,14 @@ import static org.apache.commons.lang3.builder.ToStringStyle.SHORT_PREFIX_STYLE;
 
 public class TicketCount {
 
-    private final long count;
+    private final long numberOfTickets;
 
-    public TicketCount(long count) {
-        this.count = count;
+    public TicketCount(long numberOfTickets) {
+        this.numberOfTickets = numberOfTickets;
     }
 
-    public long getCount() {
-        return count;
+    public long getNumberOfTickets() {
+        return numberOfTickets;
     }
 
     @Override

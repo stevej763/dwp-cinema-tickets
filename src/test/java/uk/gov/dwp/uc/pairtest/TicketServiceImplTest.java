@@ -47,7 +47,7 @@ public class TicketServiceImplTest {
         TicketOrder ticketOrder = aTicketOrder(10, 5, 0);
 
         when(orderValidator.createValidTicketOrder(List.of(TICKET_REQUEST))).thenReturn(ticketOrder);
-        when(paymentCalculator.calculatePayment(ticketOrder)).thenReturn(new OrderTotal(expectedPaymentAmount));
+        when(paymentCalculator.calculateOrderTotalPrice(ticketOrder)).thenReturn(new OrderTotal(expectedPaymentAmount));
 
         underTest.purchaseTickets(VALID_ACCOUNT_ID, TICKET_REQUEST);
 
@@ -58,7 +58,7 @@ public class TicketServiceImplTest {
     public void reservesSeatSuccessfullyForASingleAdultTicket() {
         TicketOrder ticketOrder = aTicketOrder(1, 0, 0);
         when(orderValidator.createValidTicketOrder(List.of(TICKET_REQUEST))).thenReturn(ticketOrder);
-        when(paymentCalculator.calculatePayment(ticketOrder)).thenReturn(ORDER_TOTAL);
+        when(paymentCalculator.calculateOrderTotalPrice(ticketOrder)).thenReturn(ORDER_TOTAL);
         underTest.purchaseTickets(VALID_ACCOUNT_ID, TICKET_REQUEST);
 
         verify(seatReservationService).reserveSeat(VALID_ACCOUNT_ID, 1);
@@ -68,7 +68,7 @@ public class TicketServiceImplTest {
     public void reservesSeatsSuccessfullyForAMultipleAdultTickets() {
         TicketOrder ticketOrder = aTicketOrder(20, 0, 0);
         when(orderValidator.createValidTicketOrder(List.of(TICKET_REQUEST))).thenReturn(ticketOrder);
-        when(paymentCalculator.calculatePayment(ticketOrder)).thenReturn(ORDER_TOTAL);
+        when(paymentCalculator.calculateOrderTotalPrice(ticketOrder)).thenReturn(ORDER_TOTAL);
 
         underTest.purchaseTickets(VALID_ACCOUNT_ID, TICKET_REQUEST);
 
@@ -79,7 +79,7 @@ public class TicketServiceImplTest {
     public void reservesSeatsSuccessfullyForAnOrderWithAdultsAndChildren() {
         TicketOrder ticketOrder = aTicketOrder(5, 5, 0);
         when(orderValidator.createValidTicketOrder(List.of(TICKET_REQUEST))).thenReturn(ticketOrder);
-        when(paymentCalculator.calculatePayment(ticketOrder)).thenReturn(ORDER_TOTAL);
+        when(paymentCalculator.calculateOrderTotalPrice(ticketOrder)).thenReturn(ORDER_TOTAL);
 
         underTest.purchaseTickets(VALID_ACCOUNT_ID, TICKET_REQUEST);
 
@@ -90,7 +90,7 @@ public class TicketServiceImplTest {
     public void reservesSeatsSuccessfullyForAnOrderWithAdultsChildrenAndInfants() {
         TicketOrder ticketOrder = aTicketOrder(5, 5, 5);
         when(orderValidator.createValidTicketOrder(List.of(TICKET_REQUEST))).thenReturn(ticketOrder);
-        when(paymentCalculator.calculatePayment(ticketOrder)).thenReturn(ORDER_TOTAL);
+        when(paymentCalculator.calculateOrderTotalPrice(ticketOrder)).thenReturn(ORDER_TOTAL);
 
         underTest.purchaseTickets(VALID_ACCOUNT_ID, TICKET_REQUEST);
 

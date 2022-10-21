@@ -1,8 +1,5 @@
 package uk.gov.dwp.uc.pairtest.domain;
 
-/**
- * Immutable Object
- */
 public class TicketTypeRequest {
 
     private final int numberOfTickets;
@@ -24,5 +21,4 @@ public class TicketTypeRequest {
     public enum Type {
         ADULT, CHILD , INFANT
     }
-
 }
