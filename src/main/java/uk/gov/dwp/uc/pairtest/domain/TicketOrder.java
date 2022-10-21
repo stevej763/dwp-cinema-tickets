@@ -7,34 +7,48 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 import static org.apache.commons.lang3.builder.ToStringStyle.SHORT_PREFIX_STYLE;
 
 public class TicketOrder {
-    private final long adultTicketCount;
-    private final long childTicketCount;
-    private final long infantTicketCount;
-
-    public TicketOrder() {
-        this(0, 0 ,0);
-    }
+    private final TicketCount adultTicketCount;
+    private final TicketCount childTicketCount;
+    private final TicketCount infantTicketCount;
 
     public TicketOrder(long adultTicketCount, long childTicketCount, long infantTicketCount) {
+        this.adultTicketCount = new TicketCount(adultTicketCount);
+        this.childTicketCount = new TicketCount(childTicketCount);
+        this.infantTicketCount = new TicketCount(infantTicketCount);
+    }
+
+    public TicketOrder(TicketCount adultTicketCount, TicketCount childTicketCount, TicketCount infantTicketCount) {
         this.adultTicketCount = adultTicketCount;
         this.childTicketCount = childTicketCount;
         this.infantTicketCount = infantTicketCount;
     }
 
-    public long getAdultTicketCount() {
+    public TicketCount getAdultTicketCount() {
         return adultTicketCount;
     }
 
-    public long getChildTicketCount() {
+    public TicketCount getChildTicketCount() {
         return childTicketCount;
     }
 
-    public long getInfantTicketCount() {
+    public TicketCount getInfantTicketCount() {
         return infantTicketCount;
     }
 
+    public long getAdultTicketCountAsLong() {
+        return adultTicketCount.getCount();
+    }
+
+    public long getChildTicketCountAsLong() {
+        return childTicketCount.getCount();
+    }
+
+    public long getInfantTicketCountAsLong() {
+        return infantTicketCount.getCount();
+    }
+
     public long getTotalTicketCount() {
-        return getAdultTicketCount() + getChildTicketCount() + getInfantTicketCount();
+        return getAdultTicketCountAsLong() + getChildTicketCountAsLong() + getInfantTicketCountAsLong();
     }
 
     @Override
