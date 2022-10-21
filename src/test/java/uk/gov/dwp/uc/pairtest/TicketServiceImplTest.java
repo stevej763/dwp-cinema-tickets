@@ -4,6 +4,7 @@ import org.hamcrest.core.Is;
 import org.junit.Test;
 import uk.gov.dwp.uc.pairtest.exception.InvalidPurchaseException;
 
+import static org.hamcrest.core.Is.*;
 import static org.junit.Assert.*;
 
 public class TicketServiceImplTest {
@@ -15,7 +16,7 @@ public class TicketServiceImplTest {
             underTest.purchaseTickets(null, null);
             fail("Should throw InvalidPurchaseException when accountID is null");
         } catch (InvalidPurchaseException exception) {
-            assertThat(exception.getMessage(), Is.is("Invalid account ID"));
+            assertThat(exception.getMessage(), is("Invalid account ID: accountId=null"));
         }
     }
 
