@@ -60,6 +60,17 @@ public class TicketServiceImplTest {
         }
     }
 
+    @Test
+    public void shouldThrowWhenTicketTypeRequestIsNull() {
+        try {
+            underTest.purchaseTickets(1L, null);
+            fail("Should throw InvalidPurchaseException when TicketTypeRequest is null");
+        } catch (InvalidPurchaseException exception) {
+            verifyOrderIsNotProcessedByPaymentOrReservationService();
+            assertThat(exception.getMessage(), is("Cannot process order due to no TicketTypeRequests being received"));
+        }
+    }
+
     private void verifyOrderIsNotProcessedByPaymentOrReservationService() {
         verifyNoInteractions(ticketPaymentService);
         verifyNoInteractions(seatReservationService);
