@@ -5,6 +5,9 @@ import thirdparty.seatbooking.SeatReservationService;
 import uk.gov.dwp.uc.pairtest.domain.TicketTypeRequest;
 import uk.gov.dwp.uc.pairtest.exception.InvalidPurchaseException;
 
+import java.util.List;
+import java.util.stream.Stream;
+
 
 public class TicketServiceImpl implements TicketService {
 
@@ -22,6 +25,11 @@ public class TicketServiceImpl implements TicketService {
     public void purchaseTickets(Long accountId, TicketTypeRequest... ticketTypeRequests) throws InvalidPurchaseException {
         checkAccountIdIsValid(accountId);
         checkForEmptyArrayOfTicketTypeRequests(ticketTypeRequests);
+
+        long totalNumberOfTickets = Stream.of(ticketTypeRequests).mapToInt(TicketTypeRequest::getNoOfTickets).summaryStatistics().getSum();
+        if (totalNumberOfTickets > 20) {
+            throw new InvalidPurchaseException("Invalid order: You cannot purchase more than 20 tickets in one order");
+        }
 
         seatReservationService.reserveSeat(accountId, 0);
         ticketPaymentService.makePayment(accountId, 0);
