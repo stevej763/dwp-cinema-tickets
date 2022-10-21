@@ -20,4 +20,15 @@ public class TicketServiceImplTest {
         }
     }
 
+    @Test
+    public void shouldThrowWhenAccountIdIsZero() {
+        TicketServiceImpl underTest = new TicketServiceImpl();
+        try {
+            underTest.purchaseTickets(0L, null);
+            fail("Should throw InvalidPurchaseException when accountID is less than 1");
+        } catch (InvalidPurchaseException exception) {
+            assertThat(exception.getMessage(), is("Invalid account ID: accountId=0"));
+        }
+    }
+
 }
