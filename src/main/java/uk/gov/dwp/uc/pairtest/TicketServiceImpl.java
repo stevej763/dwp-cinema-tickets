@@ -59,6 +59,14 @@ public class TicketServiceImpl implements TicketService {
         checkRequestHasAtLeastOneValidTicket(ticketOrder.getTotalTicketCount());
         checkRequestDoesNotExceedMaximumTicketOrderCount(ticketOrder.getTotalTicketCount());
         checkForAtLeastOneAdultTicket(ticketOrder);
+        checkThereIsAtLeastOneAdultForEveryInfant(ticketOrder);
+    }
+
+    private void checkThereIsAtLeastOneAdultForEveryInfant(TicketOrder ticketOrder) {
+        if(ticketOrder.getInfantTicketCount() > ticketOrder.getAdultTicketCount()) {
+            String message = "Invalid order: there must be at least one adult for every infant";
+            throw new InvalidPurchaseException(message);
+        }
     }
 
     private void checkForAtLeastOneAdultTicket(TicketOrder ticketOrder) {
