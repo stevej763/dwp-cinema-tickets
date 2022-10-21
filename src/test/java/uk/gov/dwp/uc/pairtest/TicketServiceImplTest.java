@@ -15,6 +15,7 @@ import static uk.gov.dwp.uc.pairtest.domain.TicketTypeRequest.Type.ADULT;
 
 public class TicketServiceImplTest {
 
+    public static final long VALID_ACCOUNT_ID = 1L;
     private final SeatReservationService seatReservationService = mock(SeatReservationService.class);
     private final TicketPaymentService ticketPaymentService = mock(TicketPaymentService.class);
     private final AccountValidator accountValidator = mock(AccountValidator.class);
@@ -29,10 +30,22 @@ public class TicketServiceImplTest {
     @Test
     public void processesRequestSuccessfullyWithValidParameters() {
         TicketTypeRequest ticketTypeRequest = new TicketTypeRequest(ADULT, 0);
-        underTest.purchaseTickets(1L, ticketTypeRequest);
+        underTest.purchaseTickets(VALID_ACCOUNT_ID, ticketTypeRequest);
 
-        verify(ticketPaymentService).makePayment(1L, 0);
-        verify(seatReservationService).reserveSeat(1L, 0);
+        verify(ticketPaymentService).makePayment(VALID_ACCOUNT_ID, 0);
+        verify(seatReservationService).reserveSeat(VALID_ACCOUNT_ID, 0);
+    }
+
+    @Test
+    public void shouldThrowIfThereAreMoreThan20TicketsInTheOrder() {
+
+        try {
+            underTest.purchaseTickets(VALID_ACCOUNT_ID, new TicketTypeRequest(ADULT, 21));
+            fail("Should throw InvalidPurchaseException when more than 20 tickets ordered at once");
+        } catch (InvalidPurchaseException exception) {
+            verifyOrderIsNotProcessedByPaymentOrReservationService();
+            assertThat(exception.getMessage(), is("Invalid order: You cannot purchase more than 20 tickets in one order"));
+        }
     }
 
     @Test
@@ -50,7 +63,7 @@ public class TicketServiceImplTest {
     @Test
     public void shouldThrowWhenTicketTypeRequestIsNull() {
         try {
-            underTest.purchaseTickets(1L, null);
+            underTest.purchaseTickets(VALID_ACCOUNT_ID, null);
             fail("Should throw InvalidPurchaseException when TicketTypeRequest is null");
         } catch (InvalidPurchaseException exception) {
             verifyOrderIsNotProcessedByPaymentOrReservationService();
@@ -62,7 +75,7 @@ public class TicketServiceImplTest {
     public void shouldThrowWhenTicketTypeRequestIsEmptyArray() {
         TicketTypeRequest[] ticketTypeRequests = new TicketTypeRequest[0];
         try {
-            underTest.purchaseTickets(1L, ticketTypeRequests);
+            underTest.purchaseTickets(VALID_ACCOUNT_ID, ticketTypeRequests);
             fail("Should throw InvalidPurchaseException when TicketTypeRequests is empty array");
         } catch (InvalidPurchaseException exception) {
             verifyOrderIsNotProcessedByPaymentOrReservationService();
