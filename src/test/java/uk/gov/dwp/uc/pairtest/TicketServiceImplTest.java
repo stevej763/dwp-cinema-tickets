@@ -110,7 +110,6 @@ public class TicketServiceImplTest {
         }
     }
 
-
     private void verifyOrderIsNotProcessedByPaymentOrReservationService() {
         verifyNoInteractions(ticketPaymentService);
         verifyNoInteractions(seatReservationService);

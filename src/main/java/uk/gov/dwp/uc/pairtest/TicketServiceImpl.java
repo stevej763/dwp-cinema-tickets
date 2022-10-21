@@ -2,9 +2,11 @@ package uk.gov.dwp.uc.pairtest;
 
 import thirdparty.paymentgateway.TicketPaymentService;
 import thirdparty.seatbooking.SeatReservationService;
+import uk.gov.dwp.uc.pairtest.domain.TicketOrder;
 import uk.gov.dwp.uc.pairtest.domain.TicketTypeRequest;
 import uk.gov.dwp.uc.pairtest.exception.InvalidPurchaseException;
 
+import java.util.List;
 import java.util.stream.Stream;
 
 
@@ -14,19 +16,20 @@ public class TicketServiceImpl implements TicketService {
     private final SeatReservationService seatReservationService;
     private final TicketPaymentService ticketPaymentService;
     private final AccountValidator accountValidator;
+    private final TicketOrderFactory ticketOrderFactory;
 
     public TicketServiceImpl(SeatReservationService seatReservationService, TicketPaymentService ticketPaymentService, AccountValidator accountValidator) {
         this.seatReservationService = seatReservationService;
         this.ticketPaymentService = ticketPaymentService;
         this.accountValidator = accountValidator;
+        this.ticketOrderFactory = new TicketOrderFactory();
     }
 
     @Override
     public void purchaseTickets(Long accountId, TicketTypeRequest... ticketTypeRequests) throws InvalidPurchaseException {
         checkAccountIdIsValid(accountId);
         checkForEmptyArrayOfTicketTypeRequests(ticketTypeRequests);
-        checkRequestHasAtLeastOneValidTicket(ticketTypeRequests);
-        checkRequestDoesNotExceedMaximumTicketOrderCount(ticketTypeRequests);
+        checkForValidTicketOrder(ticketTypeRequests);
 
         seatReservationService.reserveSeat(accountId, 0);
         ticketPaymentService.makePayment(accountId, 0);
@@ -46,16 +49,20 @@ public class TicketServiceImpl implements TicketService {
         }
     }
 
-    private void checkRequestHasAtLeastOneValidTicket(TicketTypeRequest[] ticketTypeRequests) {
-        long totalNumberOfTickets = Stream.of(ticketTypeRequests).mapToInt(TicketTypeRequest::getNoOfTickets).summaryStatistics().getSum();
+    private void checkForValidTicketOrder(TicketTypeRequest[] ticketTypeRequests) {
+        TicketOrder ticketOrder = ticketOrderFactory.toTicketOrder(List.of(ticketTypeRequests));
+        checkRequestHasAtLeastOneValidTicket(ticketOrder.getTicketCount());
+        checkRequestDoesNotExceedMaximumTicketOrderCount(ticketOrder.getTicketCount());
+    }
+
+    private void checkRequestHasAtLeastOneValidTicket(long totalNumberOfTickets) {
         if (totalNumberOfTickets < 1) {
             String message = "Invalid order: cannot process order with no tickets";
             throw new InvalidPurchaseException(message);
         }
     }
 
-    private void checkRequestDoesNotExceedMaximumTicketOrderCount(TicketTypeRequest[] ticketTypeRequests) {
-        long totalNumberOfTickets = Stream.of(ticketTypeRequests).mapToInt(TicketTypeRequest::getNoOfTickets).summaryStatistics().getSum();
+    private void checkRequestDoesNotExceedMaximumTicketOrderCount(long totalNumberOfTickets) {
         if (totalNumberOfTickets > MAXIMUM_TICKET_BOOKING_ALLOWANCE) {
             String message = String.format("Invalid order: You cannot purchase more than %s tickets in one order", MAXIMUM_TICKET_BOOKING_ALLOWANCE);
             throw new InvalidPurchaseException(message);
