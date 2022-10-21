@@ -2,6 +2,7 @@ package uk.gov.dwp.uc.pairtest;
 
 import thirdparty.paymentgateway.TicketPaymentService;
 import thirdparty.seatbooking.SeatReservationService;
+import uk.gov.dwp.uc.pairtest.domain.OrderTotal;
 import uk.gov.dwp.uc.pairtest.domain.TicketOrder;
 import uk.gov.dwp.uc.pairtest.domain.TicketTypeRequest;
 import uk.gov.dwp.uc.pairtest.exception.InvalidPurchaseException;
@@ -15,16 +16,19 @@ public class TicketServiceImpl implements TicketService {
     private final TicketPaymentService ticketPaymentService;
     private final AccountValidator accountValidator;
     private final OrderValidator orderValidator;
+    private final PaymentCalculator paymentCalculator;
 
     public TicketServiceImpl(
             SeatReservationService seatReservationService,
             TicketPaymentService ticketPaymentService,
             AccountValidator accountValidator,
-            OrderValidator orderValidator) {
+            OrderValidator orderValidator,
+            PaymentCalculator paymentCalculator) {
         this.seatReservationService = seatReservationService;
         this.ticketPaymentService = ticketPaymentService;
         this.accountValidator = accountValidator;
         this.orderValidator = orderValidator;
+        this.paymentCalculator = paymentCalculator;
     }
 
     @Override
@@ -32,9 +36,9 @@ public class TicketServiceImpl implements TicketService {
         checkAccountIdIsValid(accountId);
         checkForEmptyArrayOfTicketTypeRequests(ticketTypeRequests);
         TicketOrder ticketOrder = orderValidator.createValidTicketOrder(List.of(ticketTypeRequests));
-
+        OrderTotal orderTotal = paymentCalculator.calculatePayment(ticketOrder);
         seatReservationService.reserveSeat(accountId, ticketOrder.getTotalSeatCountForReservation());
-        ticketPaymentService.makePayment(accountId, 0);
+        ticketPaymentService.makePayment(accountId, orderTotal.getPaymentAmount());
     }
 
     private void checkAccountIdIsValid(Long accountId) {

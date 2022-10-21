@@ -4,6 +4,8 @@ import org.junit.Before;
 import org.junit.Test;
 import thirdparty.paymentgateway.TicketPaymentService;
 import thirdparty.seatbooking.SeatReservationService;
+import uk.gov.dwp.uc.pairtest.domain.OrderTotal;
+import uk.gov.dwp.uc.pairtest.domain.TicketOrder;
 import uk.gov.dwp.uc.pairtest.domain.TicketTypeRequest;
 import uk.gov.dwp.uc.pairtest.exception.InvalidPurchaseException;
 
@@ -19,17 +21,20 @@ public class TicketServiceImplTest {
 
     private static final long VALID_ACCOUNT_ID = 1L;
     private final static TicketTypeRequest TICKET_REQUEST = mock(TicketTypeRequest.class);
+    public static final OrderTotal ORDER_TOTAL = mock(OrderTotal.class);
 
     private final SeatReservationService seatReservationService = mock(SeatReservationService.class);
     private final TicketPaymentService ticketPaymentService = mock(TicketPaymentService.class);
     private final AccountValidator accountValidator = mock(AccountValidator.class);
     private final OrderValidator orderValidator = mock(OrderValidator.class);
 
+    private final PaymentCalculator paymentCalculator = mock(PaymentCalculator.class);
     private final TicketServiceImpl underTest = new TicketServiceImpl(
             seatReservationService,
             ticketPaymentService,
             accountValidator,
-            orderValidator);
+            orderValidator,
+            paymentCalculator);
 
     @Before
     public void setUp() {
@@ -37,8 +42,23 @@ public class TicketServiceImplTest {
     }
 
     @Test
+    public void ChargesPaymentService() {
+        int expectedPaymentAmount = 250;
+        TicketOrder ticketOrder = aTicketOrder(10, 5, 0);
+
+        when(orderValidator.createValidTicketOrder(List.of(TICKET_REQUEST))).thenReturn(ticketOrder);
+        when(paymentCalculator.calculatePayment(ticketOrder)).thenReturn(new OrderTotal(expectedPaymentAmount));
+
+        underTest.purchaseTickets(VALID_ACCOUNT_ID, TICKET_REQUEST);
+
+        verify(ticketPaymentService).makePayment(VALID_ACCOUNT_ID, expectedPaymentAmount);
+    }
+
+    @Test
     public void reservesSeatSuccessfullyForASingleAdultTicket() {
-        when(orderValidator.createValidTicketOrder(List.of(TICKET_REQUEST))).thenReturn(aTicketOrder(1, 0, 0));
+        TicketOrder ticketOrder = aTicketOrder(1, 0, 0);
+        when(orderValidator.createValidTicketOrder(List.of(TICKET_REQUEST))).thenReturn(ticketOrder);
+        when(paymentCalculator.calculatePayment(ticketOrder)).thenReturn(ORDER_TOTAL);
         underTest.purchaseTickets(VALID_ACCOUNT_ID, TICKET_REQUEST);
 
         verify(seatReservationService).reserveSeat(VALID_ACCOUNT_ID, 1);
@@ -46,7 +66,9 @@ public class TicketServiceImplTest {
 
     @Test
     public void reservesSeatsSuccessfullyForAMultipleAdultTickets() {
-        when(orderValidator.createValidTicketOrder(List.of(TICKET_REQUEST))).thenReturn(aTicketOrder(20, 0, 0));
+        TicketOrder ticketOrder = aTicketOrder(20, 0, 0);
+        when(orderValidator.createValidTicketOrder(List.of(TICKET_REQUEST))).thenReturn(ticketOrder);
+        when(paymentCalculator.calculatePayment(ticketOrder)).thenReturn(ORDER_TOTAL);
 
         underTest.purchaseTickets(VALID_ACCOUNT_ID, TICKET_REQUEST);
 
@@ -55,7 +77,9 @@ public class TicketServiceImplTest {
 
     @Test
     public void reservesSeatsSuccessfullyForAnOrderWithAdultsAndChildren() {
-        when(orderValidator.createValidTicketOrder(List.of(TICKET_REQUEST))).thenReturn(aTicketOrder(5, 5, 0));
+        TicketOrder ticketOrder = aTicketOrder(5, 5, 0);
+        when(orderValidator.createValidTicketOrder(List.of(TICKET_REQUEST))).thenReturn(ticketOrder);
+        when(paymentCalculator.calculatePayment(ticketOrder)).thenReturn(ORDER_TOTAL);
 
         underTest.purchaseTickets(VALID_ACCOUNT_ID, TICKET_REQUEST);
 
@@ -64,7 +88,9 @@ public class TicketServiceImplTest {
 
     @Test
     public void reservesSeatsSuccessfullyForAnOrderWithAdultsChildrenAndInfants() {
-        when(orderValidator.createValidTicketOrder(List.of(TICKET_REQUEST))).thenReturn(aTicketOrder(5, 5, 5));
+        TicketOrder ticketOrder = aTicketOrder(5, 5, 5);
+        when(orderValidator.createValidTicketOrder(List.of(TICKET_REQUEST))).thenReturn(ticketOrder);
+        when(paymentCalculator.calculatePayment(ticketOrder)).thenReturn(ORDER_TOTAL);
 
         underTest.purchaseTickets(VALID_ACCOUNT_ID, TICKET_REQUEST);
 
