@@ -18,17 +18,24 @@ public class TicketServiceImpl implements TicketService {
 
     @Override
     public void purchaseTickets(Long accountId, TicketTypeRequest... ticketTypeRequests) throws InvalidPurchaseException {
+        checkAccountIdIsValid(accountId);
+        checkForEmptyArrayOfTicketTypeRequests(ticketTypeRequests);
+
+        seatReservationService.reserveSeat(accountId, 0);
+        ticketPaymentService.makePayment(accountId, 0);
+    }
+
+    private void checkForEmptyArrayOfTicketTypeRequests(TicketTypeRequest[] ticketTypeRequests) {
+        if (ticketTypeRequests == null || ticketTypeRequests.length == 0) {
+            String message = "Cannot process order due to no TicketTypeRequests being received";
+            throw new InvalidPurchaseException(message);
+        }
+    }
+
+    private void checkAccountIdIsValid(Long accountId) {
         if (accountId == null || accountId <= 0) {
             String message = String.format("Invalid account ID: accountId=%s", accountId);
             throw new InvalidPurchaseException(message);
         }
-
-        if (ticketTypeRequests == null) {
-            String message = "Cannot process order due to no TicketTypeRequests being received";
-            throw new InvalidPurchaseException(message);
-        }
-
-        seatReservationService.reserveSeat(accountId, 0);
-        ticketPaymentService.makePayment(accountId, 0);
     }
 }

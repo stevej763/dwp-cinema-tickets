@@ -33,7 +33,7 @@ public class TicketServiceImplTest {
     @Test
     public void shouldThrowWhenAccountIdIsNull() {
         try {
-            underTest.purchaseTickets(null, null);
+            underTest.purchaseTickets(null);
             fail("Should throw InvalidPurchaseException when accountID is null");
         } catch (InvalidPurchaseException exception) {
             verifyOrderIsNotProcessedByPaymentOrReservationService();
@@ -44,7 +44,7 @@ public class TicketServiceImplTest {
     @Test
     public void shouldThrowWhenAccountIdIsZero() {
         try {
-            underTest.purchaseTickets(0L, null);
+            underTest.purchaseTickets(0L);
             fail("Should throw InvalidPurchaseException when accountID is less than 1");
         } catch (InvalidPurchaseException exception) {
             verifyOrderIsNotProcessedByPaymentOrReservationService();
@@ -55,7 +55,7 @@ public class TicketServiceImplTest {
     @Test
     public void shouldThrowWhenAccountIdIsNegative() {
         try {
-            underTest.purchaseTickets(-1L, null);
+            underTest.purchaseTickets(-1L);
             fail("Should throw InvalidPurchaseException when accountID is less than 1");
         } catch (InvalidPurchaseException exception) {
             verifyOrderIsNotProcessedByPaymentOrReservationService();
@@ -68,6 +68,18 @@ public class TicketServiceImplTest {
         try {
             underTest.purchaseTickets(1L, null);
             fail("Should throw InvalidPurchaseException when TicketTypeRequest is null");
+        } catch (InvalidPurchaseException exception) {
+            verifyOrderIsNotProcessedByPaymentOrReservationService();
+            assertThat(exception.getMessage(), is("Cannot process order due to no TicketTypeRequests being received"));
+        }
+    }
+
+    @Test
+    public void shouldThrowWhenTicketTypeRequestIsEmptyArray() {
+        TicketTypeRequest[] ticketTypeRequests = new TicketTypeRequest[0];
+        try {
+            underTest.purchaseTickets(1L, ticketTypeRequests);
+            fail("Should throw InvalidPurchaseException when TicketTypeRequests is empty array");
         } catch (InvalidPurchaseException exception) {
             verifyOrderIsNotProcessedByPaymentOrReservationService();
             assertThat(exception.getMessage(), is("Cannot process order due to no TicketTypeRequests being received"));
