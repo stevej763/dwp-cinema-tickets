@@ -19,6 +19,7 @@ import static uk.gov.dwp.uc.pairtest.domain.TicketTypeRequest.Type.ADULT;
 
 public class TicketServiceImplTest {
 
+    private final static TicketTypeRequest TICKET_REQUEST = mock(TicketTypeRequest.class);
     private static final TicketTypeRequest SINGLE_ADULT_TICKET_REQUEST = new TicketTypeRequest(ADULT, 1);
     private static final long VALID_ACCOUNT_ID = 1L;
 
@@ -40,20 +41,45 @@ public class TicketServiceImplTest {
 
     @Test
     public void reservesSeatSuccessfullyForASingleAdultTicket() {
-        when(orderValidator.createValidTicketOrder(List.of(SINGLE_ADULT_TICKET_REQUEST))).thenReturn(aTickerOrder(1, 0, 0));
-        underTest.purchaseTickets(VALID_ACCOUNT_ID, SINGLE_ADULT_TICKET_REQUEST);
+        when(orderValidator.createValidTicketOrder(List.of(TICKET_REQUEST))).thenReturn(aTickerOrder(1, 0, 0));
+        underTest.purchaseTickets(VALID_ACCOUNT_ID, TICKET_REQUEST);
 
         verify(seatReservationService).reserveSeat(VALID_ACCOUNT_ID, 1);
     }
 
     @Test
+    public void reservesSeatsSuccessfullyForAMultipleAdultTickets() {
+        when(orderValidator.createValidTicketOrder(List.of(TICKET_REQUEST))).thenReturn(aTickerOrder(20, 0, 0));
+
+        underTest.purchaseTickets(VALID_ACCOUNT_ID, TICKET_REQUEST);
+
+        verify(seatReservationService).reserveSeat(VALID_ACCOUNT_ID, 20);
+    }
+
+    @Test
+    public void reservesSeatsSuccessfullyForAnOrderWithAdultsAndChildren() {
+        when(orderValidator.createValidTicketOrder(List.of(TICKET_REQUEST))).thenReturn(aTickerOrder(5, 5, 0));
+
+        underTest.purchaseTickets(VALID_ACCOUNT_ID, TICKET_REQUEST);
+
+        verify(seatReservationService).reserveSeat(VALID_ACCOUNT_ID, 10);
+    }
+
+    @Test
+    public void reservesSeatsSuccessfullyForAnOrderWithAdultsChildrenAndInfants() {
+        when(orderValidator.createValidTicketOrder(List.of(TICKET_REQUEST))).thenReturn(aTickerOrder(5, 5, 5));
+
+        underTest.purchaseTickets(VALID_ACCOUNT_ID, TICKET_REQUEST);
+
+        verify(seatReservationService).reserveSeat(VALID_ACCOUNT_ID, 10);
+    }
+
+    @Test
     public void shouldThrowWhenOrderIsInvalid() {
         InvalidPurchaseException expectedException = new InvalidPurchaseException("exception message");
-        final TicketTypeRequest[] ticketTypeRequests = new TicketTypeRequest[]{SINGLE_ADULT_TICKET_REQUEST};
-        doThrow(expectedException).when(orderValidator).createValidTicketOrder(List.of(ticketTypeRequests));
-
+        doThrow(expectedException).when(orderValidator).createValidTicketOrder(List.of(TICKET_REQUEST));
         try {
-            underTest.purchaseTickets(VALID_ACCOUNT_ID, ticketTypeRequests);
+            underTest.purchaseTickets(VALID_ACCOUNT_ID, TICKET_REQUEST);
             fail("Should throw InvalidPurchaseException when order request is invalid");
         } catch (InvalidPurchaseException exception) {
             verifyOrderIsNotProcessedByPaymentOrReservationService();
