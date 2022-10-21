@@ -5,11 +5,11 @@ import static org.apache.commons.lang3.builder.HashCodeBuilder.reflectionHashCod
 import static org.apache.commons.lang3.builder.ToStringBuilder.reflectionToString;
 import static org.apache.commons.lang3.builder.ToStringStyle.SHORT_PREFIX_STYLE;
 
-public class OrderPayment {
+public class OrderTotal {
 
     private final int paymentAmount;
 
-    public OrderPayment(int paymentAmount) {
+    public OrderTotal(int paymentAmount) {
         this.paymentAmount = paymentAmount;
     }
 
