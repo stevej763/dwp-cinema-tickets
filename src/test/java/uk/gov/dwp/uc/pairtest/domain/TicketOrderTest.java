@@ -7,7 +7,9 @@ import static org.junit.Assert.assertThat;
 
 public class TicketOrderTest {
 
-    private final TicketOrder underTest = new TicketOrder(1, 1, 1);
+    private final TicketCount ticketCount = new TicketCount(1);
+
+    private final TicketOrder underTest = new TicketOrder(ticketCount, ticketCount, ticketCount);;
 
     @Test
     public void shouldReturnTotalTicketCount() {
@@ -23,6 +25,7 @@ public class TicketOrderTest {
     public void returnsChildTicketCountAsLong() {
         assertThat(underTest.getAdultTicketCountAsLong(), is(1L));
     }
+
     @Test
     public void returnsInfantTicketCountAsLong() {
         assertThat(underTest.getAdultTicketCountAsLong(), is(1L));

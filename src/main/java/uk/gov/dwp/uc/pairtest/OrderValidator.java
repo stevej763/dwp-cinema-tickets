@@ -11,13 +11,19 @@ import java.util.List;
 public class OrderValidator {
 
     private static final int MAXIMUM_TICKET_BOOKING_ALLOWANCE = 20;
+    private final TicketOrderFactory ticketOrderFactory;
 
-    public void checkForValidTicketOrder(TicketTypeRequest[] ticketTypeRequests, TicketOrderFactory ticketOrderFactory) {
-        TicketOrder ticketOrder = ticketOrderFactory.toTicketOrder(List.of(ticketTypeRequests));
+    public OrderValidator(TicketOrderFactory ticketOrderFactory) {
+        this.ticketOrderFactory = ticketOrderFactory;
+    }
+
+    public TicketOrder checkForValidTicketOrder(List<TicketTypeRequest> request) throws InvalidPurchaseException {
+        TicketOrder ticketOrder = ticketOrderFactory.toTicketOrder(request);
         checkRequestHasAtLeastOneValidTicket(ticketOrder.getTotalTicketCount());
-        checkRequestDoesNotExceedMaximumTicketOrderCount(ticketOrder.getTotalTicketCount());
         checkForAtLeastOneAdultTicket(ticketOrder);
+        checkRequestDoesNotExceedMaximumTicketOrderCount(ticketOrder.getTotalTicketCount());
         checkThereIsAtLeastOneAdultForEveryInfant(ticketOrder);
+        return ticketOrder;
     }
 
     private void checkThereIsAtLeastOneAdultForEveryInfant(TicketOrder ticketOrder) {

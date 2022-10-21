@@ -2,9 +2,11 @@ package uk.gov.dwp.uc.pairtest;
 
 import thirdparty.paymentgateway.TicketPaymentService;
 import thirdparty.seatbooking.SeatReservationService;
-import uk.gov.dwp.uc.pairtest.domain.TicketOrderFactory;
+import uk.gov.dwp.uc.pairtest.domain.TicketOrder;
 import uk.gov.dwp.uc.pairtest.domain.TicketTypeRequest;
 import uk.gov.dwp.uc.pairtest.exception.InvalidPurchaseException;
+
+import java.util.List;
 
 
 public class TicketServiceImpl implements TicketService {
@@ -12,19 +14,16 @@ public class TicketServiceImpl implements TicketService {
     private final SeatReservationService seatReservationService;
     private final TicketPaymentService ticketPaymentService;
     private final AccountValidator accountValidator;
-    private final TicketOrderFactory ticketOrderFactory;
     private final OrderValidator orderValidator;
 
     public TicketServiceImpl(
             SeatReservationService seatReservationService,
             TicketPaymentService ticketPaymentService,
             AccountValidator accountValidator,
-            TicketOrderFactory ticketOrderFactory,
             OrderValidator orderValidator) {
         this.seatReservationService = seatReservationService;
         this.ticketPaymentService = ticketPaymentService;
         this.accountValidator = accountValidator;
-        this.ticketOrderFactory = ticketOrderFactory;
         this.orderValidator = orderValidator;
     }
 
@@ -32,7 +31,7 @@ public class TicketServiceImpl implements TicketService {
     public void purchaseTickets(Long accountId, TicketTypeRequest... ticketTypeRequests) throws InvalidPurchaseException {
         checkAccountIdIsValid(accountId);
         checkForEmptyArrayOfTicketTypeRequests(ticketTypeRequests);
-        orderValidator.checkForValidTicketOrder(ticketTypeRequests, ticketOrderFactory);
+        TicketOrder ticketOrder = orderValidator.checkForValidTicketOrder(List.of(ticketTypeRequests));
 
         seatReservationService.reserveSeat(accountId, 0);
         ticketPaymentService.makePayment(accountId, 0);
