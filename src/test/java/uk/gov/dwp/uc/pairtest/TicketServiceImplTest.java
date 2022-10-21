@@ -30,7 +30,6 @@ public class TicketServiceImplTest {
 
     private final TicketServiceImpl underTest = new TicketServiceImpl(seatReservationService, ticketPaymentService, accountValidator, ticketOrderFactory);
 
-
     @Before
     public void setUp() {
         when(accountValidator.isValidAccount(any())).thenReturn(true);
@@ -134,6 +133,20 @@ public class TicketServiceImplTest {
         } catch (InvalidPurchaseException exception) {
             verifyOrderIsNotProcessedByPaymentOrReservationService();
             assertThat(exception.getMessage(), is("Invalid order: cannot process order with no tickets"));
+        }
+    }
+
+    @Test
+    public void shouldThrowIfThereMoreInfantsThanAdults() {
+        TicketTypeRequest adultTicketRequest = new TicketTypeRequest(ADULT, 1);
+        TicketTypeRequest infantTicketRequest = new TicketTypeRequest(ADULT, 2);
+        when(ticketOrderFactory.toTicketOrder(List.of(adultTicketRequest, infantTicketRequest))).thenReturn(new TicketOrder(1, 0, 2));
+        try {
+            underTest.purchaseTickets(VALID_ACCOUNT_ID, adultTicketRequest, infantTicketRequest);
+            fail("Should throw InvalidPurchaseException when there are more infants than adults on the order");
+        } catch (InvalidPurchaseException exception) {
+            verifyOrderIsNotProcessedByPaymentOrReservationService();
+            assertThat(exception.getMessage(), is("Invalid order: there must be at least one adult for every infant"));
         }
     }
 
