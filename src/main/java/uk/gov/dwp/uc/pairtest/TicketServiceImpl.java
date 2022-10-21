@@ -31,9 +31,9 @@ public class TicketServiceImpl implements TicketService {
     public void purchaseTickets(Long accountId, TicketTypeRequest... ticketTypeRequests) throws InvalidPurchaseException {
         checkAccountIdIsValid(accountId);
         checkForEmptyArrayOfTicketTypeRequests(ticketTypeRequests);
-        TicketOrder ticketOrder = orderValidator.checkForValidTicketOrder(List.of(ticketTypeRequests));
+        TicketOrder ticketOrder = orderValidator.createValidTicketOrder(List.of(ticketTypeRequests));
 
-        seatReservationService.reserveSeat(accountId, 0);
+        seatReservationService.reserveSeat(accountId, ticketOrder.getTotalTicketCount().intValue());
         ticketPaymentService.makePayment(accountId, 0);
     }
 

@@ -17,7 +17,7 @@ public class OrderValidator {
         this.ticketOrderFactory = ticketOrderFactory;
     }
 
-    public TicketOrder checkForValidTicketOrder(List<TicketTypeRequest> request) throws InvalidPurchaseException {
+    public TicketOrder createValidTicketOrder(List<TicketTypeRequest> request) throws InvalidPurchaseException {
         TicketOrder ticketOrder = ticketOrderFactory.toTicketOrder(request);
         checkRequestHasAtLeastOneValidTicket(ticketOrder.getTotalTicketCount());
         checkForAtLeastOneAdultTicket(ticketOrder);

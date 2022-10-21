@@ -11,12 +11,6 @@ public class TicketOrder {
     private final TicketCount childTicketCount;
     private final TicketCount infantTicketCount;
 
-    public TicketOrder(long adultTicketCount, long childTicketCount, long infantTicketCount) {
-        this.adultTicketCount = new TicketCount(adultTicketCount);
-        this.childTicketCount = new TicketCount(childTicketCount);
-        this.infantTicketCount = new TicketCount(infantTicketCount);
-    }
-
     public TicketOrder(TicketCount adultTicketCount, TicketCount childTicketCount, TicketCount infantTicketCount) {
         this.adultTicketCount = adultTicketCount;
         this.childTicketCount = childTicketCount;
@@ -35,19 +29,19 @@ public class TicketOrder {
         return infantTicketCount;
     }
 
-    public long getAdultTicketCountAsLong() {
+    public Long getAdultTicketCountAsLong() {
         return adultTicketCount.getCount();
     }
 
-    public long getChildTicketCountAsLong() {
+    public Long getChildTicketCountAsLong() {
         return childTicketCount.getCount();
     }
 
-    public long getInfantTicketCountAsLong() {
+    public Long getInfantTicketCountAsLong() {
         return infantTicketCount.getCount();
     }
 
-    public long getTotalTicketCount() {
+    public Long getTotalTicketCount() {
         return getAdultTicketCountAsLong() + getChildTicketCountAsLong() + getInfantTicketCountAsLong();
     }
 

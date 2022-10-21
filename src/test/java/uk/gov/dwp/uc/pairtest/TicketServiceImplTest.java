@@ -40,7 +40,7 @@ public class TicketServiceImplTest {
 
     @Test
     public void reservesSeatSuccessfullyForASingleAdultTicket() {
-        when(orderValidator.checkForValidTicketOrder(List.of(SINGLE_ADULT_TICKET_REQUEST))).thenReturn(new TicketOrder(new TicketCount(1), null, null));
+        when(orderValidator.createValidTicketOrder(List.of(SINGLE_ADULT_TICKET_REQUEST))).thenReturn(aTickerOrder(1, 0, 0));
         underTest.purchaseTickets(VALID_ACCOUNT_ID, SINGLE_ADULT_TICKET_REQUEST);
 
         verify(seatReservationService).reserveSeat(VALID_ACCOUNT_ID, 1);
@@ -50,7 +50,7 @@ public class TicketServiceImplTest {
     public void shouldThrowWhenOrderIsInvalid() {
         InvalidPurchaseException expectedException = new InvalidPurchaseException("exception message");
         final TicketTypeRequest[] ticketTypeRequests = new TicketTypeRequest[]{SINGLE_ADULT_TICKET_REQUEST};
-        doThrow(expectedException).when(orderValidator).checkForValidTicketOrder(List.of(ticketTypeRequests));
+        doThrow(expectedException).when(orderValidator).createValidTicketOrder(List.of(ticketTypeRequests));
 
         try {
             underTest.purchaseTickets(VALID_ACCOUNT_ID, ticketTypeRequests);
@@ -99,5 +99,9 @@ public class TicketServiceImplTest {
     private void verifyOrderIsNotProcessedByPaymentOrReservationService() {
         verifyNoInteractions(ticketPaymentService);
         verifyNoInteractions(seatReservationService);
+    }
+
+    private TicketOrder aTickerOrder(int adultTicketCount, int childTicketCount, int infantTicketCount) {
+        return new TicketOrder(new TicketCount(adultTicketCount), new TicketCount(childTicketCount), new TicketCount(infantTicketCount));
     }
 }
