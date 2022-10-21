@@ -25,6 +25,7 @@ public class TicketServiceImpl implements TicketService {
     public void purchaseTickets(Long accountId, TicketTypeRequest... ticketTypeRequests) throws InvalidPurchaseException {
         checkAccountIdIsValid(accountId);
         checkForEmptyArrayOfTicketTypeRequests(ticketTypeRequests);
+        checkRequestHasAtLeastOneValidTicket(ticketTypeRequests);
         checkRequestDoesNotExceedMaximumTicketOrderCount(ticketTypeRequests);
 
         seatReservationService.reserveSeat(accountId, 0);
@@ -40,7 +41,15 @@ public class TicketServiceImpl implements TicketService {
 
     private void checkForEmptyArrayOfTicketTypeRequests(TicketTypeRequest[] ticketTypeRequests) {
         if (ticketTypeRequests == null || ticketTypeRequests.length == 0) {
-            String message = "Cannot process order due to no TicketTypeRequests being received";
+            String message = "Invalid order: Cannot process order due to no TicketTypeRequests being received";
+            throw new InvalidPurchaseException(message);
+        }
+    }
+
+    private void checkRequestHasAtLeastOneValidTicket(TicketTypeRequest[] ticketTypeRequests) {
+        long totalNumberOfTickets = Stream.of(ticketTypeRequests).mapToInt(TicketTypeRequest::getNoOfTickets).summaryStatistics().getSum();
+        if (totalNumberOfTickets < 1) {
+            String message = "Invalid order: cannot process order with no tickets";
             throw new InvalidPurchaseException(message);
         }
     }

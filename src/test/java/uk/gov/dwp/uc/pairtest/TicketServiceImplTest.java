@@ -12,11 +12,10 @@ import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
 import static org.mockito.Mockito.*;
 import static uk.gov.dwp.uc.pairtest.domain.TicketTypeRequest.Type.ADULT;
-import static uk.gov.dwp.uc.pairtest.domain.TicketTypeRequest.Type.CHILD;
 
 public class TicketServiceImplTest {
 
-    public static final long VALID_ACCOUNT_ID = 1L;
+    private static final long VALID_ACCOUNT_ID = 1L;
     private final SeatReservationService seatReservationService = mock(SeatReservationService.class);
     private final TicketPaymentService ticketPaymentService = mock(TicketPaymentService.class);
     private final AccountValidator accountValidator = mock(AccountValidator.class);
@@ -30,7 +29,7 @@ public class TicketServiceImplTest {
 
     @Test
     public void processesRequestSuccessfullyWithValidParameters() {
-        TicketTypeRequest ticketTypeRequest = new TicketTypeRequest(ADULT, 0);
+        TicketTypeRequest ticketTypeRequest = new TicketTypeRequest(ADULT, 1);
         underTest.purchaseTickets(VALID_ACCOUNT_ID, ticketTypeRequest);
 
         verify(ticketPaymentService).makePayment(VALID_ACCOUNT_ID, 0);
@@ -84,7 +83,7 @@ public class TicketServiceImplTest {
             fail("Should throw InvalidPurchaseException when TicketTypeRequest is null");
         } catch (InvalidPurchaseException exception) {
             verifyOrderIsNotProcessedByPaymentOrReservationService();
-            assertThat(exception.getMessage(), is("Cannot process order due to no TicketTypeRequests being received"));
+            assertThat(exception.getMessage(), is("Invalid order: Cannot process order due to no TicketTypeRequests being received"));
         }
     }
 
@@ -96,9 +95,21 @@ public class TicketServiceImplTest {
             fail("Should throw InvalidPurchaseException when TicketTypeRequests is empty array");
         } catch (InvalidPurchaseException exception) {
             verifyOrderIsNotProcessedByPaymentOrReservationService();
-            assertThat(exception.getMessage(), is("Cannot process order due to no TicketTypeRequests being received"));
+            assertThat(exception.getMessage(), is("Invalid order: Cannot process order due to no TicketTypeRequests being received"));
         }
     }
+
+    @Test
+    public void shouldThrowIfThereAreNoTicketsInTheTicketTypeRequest() {
+        try {
+            underTest.purchaseTickets(VALID_ACCOUNT_ID, new TicketTypeRequest(ADULT, 0));
+            fail("Should throw InvalidPurchaseException when there are no tickets in the any TicketTypeRequests");
+        } catch (InvalidPurchaseException exception) {
+            verifyOrderIsNotProcessedByPaymentOrReservationService();
+            assertThat(exception.getMessage(), is("Invalid order: cannot process order with no tickets"));
+        }
+    }
+
 
     private void verifyOrderIsNotProcessedByPaymentOrReservationService() {
         verifyNoInteractions(ticketPaymentService);
