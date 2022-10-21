@@ -56,8 +56,12 @@ public class TicketServiceImpl implements TicketService {
 
     private void checkForValidTicketOrder(TicketTypeRequest[] ticketTypeRequests) {
         TicketOrder ticketOrder = ticketOrderFactory.toTicketOrder(List.of(ticketTypeRequests));
-        checkRequestHasAtLeastOneValidTicket(ticketOrder.getTicketCount());
-        checkRequestDoesNotExceedMaximumTicketOrderCount(ticketOrder.getTicketCount());
+        checkRequestHasAtLeastOneValidTicket(ticketOrder.getTotalTicketCount());
+        checkRequestDoesNotExceedMaximumTicketOrderCount(ticketOrder.getTotalTicketCount());
+        if (ticketOrder.getAdultTicketCount() < 1) {
+            String message = "Invalid order: You must order at least one adult ticket";
+            throw new InvalidPurchaseException(message);
+        }
     }
 
     private void checkRequestHasAtLeastOneValidTicket(long totalNumberOfTickets) {

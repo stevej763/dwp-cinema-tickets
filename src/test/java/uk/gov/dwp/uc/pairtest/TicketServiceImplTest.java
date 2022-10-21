@@ -16,6 +16,7 @@ import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
 import static org.mockito.Mockito.*;
 import static uk.gov.dwp.uc.pairtest.domain.TicketTypeRequest.Type.ADULT;
+import static uk.gov.dwp.uc.pairtest.domain.TicketTypeRequest.Type.CHILD;
 
 public class TicketServiceImplTest {
 
@@ -37,7 +38,7 @@ public class TicketServiceImplTest {
 
     @Test
     public void processesRequestSuccessfullyWithValidParameters() {
-        when(ticketOrderFactory.toTicketOrder(List.of(SINGLE_ADULT_TICKET_REQUEST))).thenReturn(new TicketOrder(1));
+        when(ticketOrderFactory.toTicketOrder(List.of(SINGLE_ADULT_TICKET_REQUEST))).thenReturn(new TicketOrder(1, 0, 0));
         underTest.purchaseTickets(VALID_ACCOUNT_ID, SINGLE_ADULT_TICKET_REQUEST);
 
         verify(ticketPaymentService).makePayment(VALID_ACCOUNT_ID, 0);
@@ -47,7 +48,7 @@ public class TicketServiceImplTest {
     @Test
     public void shouldThrowIfThereAreMoreThan20TicketsInTheOrderFromOneTicketTypeRequest() {
         TicketTypeRequest tickerRequestExceedingMaximum = new TicketTypeRequest(ADULT, 21);
-        when(ticketOrderFactory.toTicketOrder(List.of(tickerRequestExceedingMaximum))).thenReturn(new TicketOrder(21));
+        when(ticketOrderFactory.toTicketOrder(List.of(tickerRequestExceedingMaximum))).thenReturn(new TicketOrder(21, 0, 0));
         try {
             underTest.purchaseTickets(VALID_ACCOUNT_ID, tickerRequestExceedingMaximum);
             fail("Should throw InvalidPurchaseException when more than 20 tickets ordered at once");
@@ -65,13 +66,26 @@ public class TicketServiceImplTest {
                 new TicketTypeRequest(ADULT, 5),
                 new TicketTypeRequest(ADULT, 5),
                 new TicketTypeRequest(ADULT, 5)};
-        when(ticketOrderFactory.toTicketOrder(List.of(ticketTypeRequests))).thenReturn(new TicketOrder(25));
+        when(ticketOrderFactory.toTicketOrder(List.of(ticketTypeRequests))).thenReturn(new TicketOrder(25, 0, 0));
         try {
             underTest.purchaseTickets(VALID_ACCOUNT_ID, ticketTypeRequests);
             fail("Should throw InvalidPurchaseException when more than 20 tickets ordered at once");
         } catch (InvalidPurchaseException exception) {
             verifyOrderIsNotProcessedByPaymentOrReservationService();
             assertThat(exception.getMessage(), is("Invalid order: You cannot purchase more than 20 tickets in one order"));
+        }
+    }
+
+    @Test
+    public void shouldThrowIfThereAreNoAdultTicketsInTheOrder() {
+        TicketTypeRequest ticketTypeRequest = new TicketTypeRequest(CHILD, 1);
+        when(ticketOrderFactory.toTicketOrder(List.of(ticketTypeRequest))).thenReturn(new TicketOrder(0, 1, 0));
+        try {
+            underTest.purchaseTickets(VALID_ACCOUNT_ID, ticketTypeRequest);
+            fail("Should throw InvalidPurchaseException when there are no adult tickets in the order");
+        } catch (InvalidPurchaseException exception) {
+            verifyOrderIsNotProcessedByPaymentOrReservationService();
+            assertThat(exception.getMessage(), is("Invalid order: You must order at least one adult ticket"));
         }
     }
 
@@ -113,7 +127,7 @@ public class TicketServiceImplTest {
     @Test
     public void shouldThrowIfThereAreNoTicketsInTheTicketTypeRequest() {
         TicketTypeRequest emptyTicketRequest = new TicketTypeRequest(ADULT, 0);
-        when(ticketOrderFactory.toTicketOrder(List.of(emptyTicketRequest))).thenReturn(new TicketOrder(0));
+        when(ticketOrderFactory.toTicketOrder(List.of(emptyTicketRequest))).thenReturn(new TicketOrder(0, 0, 0));
         try {
             underTest.purchaseTickets(VALID_ACCOUNT_ID, emptyTicketRequest);
             fail("Should throw InvalidPurchaseException when there are no tickets in the any TicketTypeRequests");

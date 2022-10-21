@@ -1,6 +1,5 @@
 package uk.gov.dwp.uc.pairtest.domain;
 
-import org.hamcrest.core.Is;
 import org.junit.Test;
 
 import java.util.List;
@@ -19,7 +18,7 @@ public class TicketOrderFactoryTest {
 
         TicketOrder result = underTest.toTicketOrder(List.of(ticketTypeRequest));
 
-        assertThat(result, is(new TicketOrder(1)));
+        assertThat(result, is(new TicketOrder(1, 0, 0)));
     }
 
     @Test
@@ -28,7 +27,7 @@ public class TicketOrderFactoryTest {
 
         TicketOrder result = underTest.toTicketOrder(List.of(ticketTypeRequest));
 
-        assertThat(result, is(new TicketOrder(0)));
+        assertThat(result, is(new TicketOrder(0, 0, 0)));
     }
 
     @Test
@@ -44,7 +43,7 @@ public class TicketOrderFactoryTest {
                 ticketTypeRequest3,
                 ticketTypeRequest4));
 
-        assertThat(result, is(new TicketOrder(20)));
+        assertThat(result, is(new TicketOrder(20, 0, 0)));
     }
 
 }

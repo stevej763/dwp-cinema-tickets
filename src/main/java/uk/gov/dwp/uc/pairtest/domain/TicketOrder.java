@@ -3,19 +3,38 @@ package uk.gov.dwp.uc.pairtest.domain;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
-import org.apache.commons.lang3.builder.ToStringStyle;
 
 import static org.apache.commons.lang3.builder.ToStringStyle.SHORT_PREFIX_STYLE;
 
 public class TicketOrder {
-    private final long ticketCount;
+    private final long adultTicketCount;
+    private final long childTicketCount;
+    private final long infantTicketCount;
 
-    public TicketOrder(long ticketCount) {
-        this.ticketCount = ticketCount;
+    public TicketOrder() {
+        this(0, 0 ,0);
     }
 
-    public long getTicketCount() {
-        return ticketCount;
+    public TicketOrder(long adultTicketCount, long childTicketCount, long infantTicketCount) {
+        this.adultTicketCount = adultTicketCount;
+        this.childTicketCount = childTicketCount;
+        this.infantTicketCount = infantTicketCount;
+    }
+
+    public long getAdultTicketCount() {
+        return adultTicketCount;
+    }
+
+    public long getChildTicketCount() {
+        return childTicketCount;
+    }
+
+    public long getInfantTicketCount() {
+        return infantTicketCount;
+    }
+
+    public long getTotalTicketCount() {
+        return getAdultTicketCount() + getChildTicketCount() + getInfantTicketCount();
     }
 
     @Override
