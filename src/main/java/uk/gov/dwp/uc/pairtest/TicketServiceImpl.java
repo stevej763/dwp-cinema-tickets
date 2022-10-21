@@ -8,6 +8,9 @@ public class TicketServiceImpl implements TicketService {
 
     @Override
     public void purchaseTickets(Long accountId, TicketTypeRequest... ticketTypeRequests) throws InvalidPurchaseException {
+        if (accountId == null) {
+            throw new InvalidPurchaseException("Invalid account ID");
+        }
 
     }
 }
