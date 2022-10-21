@@ -20,7 +20,7 @@ public class TicketOrderFactory {
                 .filter(request -> isTicketTypeOf(type, request))
                 .collect(toList());
         long sumOfTickets = filteredRequests.stream()
-                .mapToInt(TicketTypeRequest::getNoOfTickets)
+                .mapToInt(TicketTypeRequest::getNumberOfTickets)
                 .summaryStatistics().getSum();
         return new TicketCount(sumOfTickets);
     }
