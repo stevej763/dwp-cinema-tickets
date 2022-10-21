@@ -4,8 +4,12 @@ import org.junit.Before;
 import org.junit.Test;
 import thirdparty.paymentgateway.TicketPaymentService;
 import thirdparty.seatbooking.SeatReservationService;
+import uk.gov.dwp.uc.pairtest.domain.TicketOrder;
+import uk.gov.dwp.uc.pairtest.domain.TicketOrderFactory;
 import uk.gov.dwp.uc.pairtest.domain.TicketTypeRequest;
 import uk.gov.dwp.uc.pairtest.exception.InvalidPurchaseException;
+
+import java.util.List;
 
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
@@ -15,12 +19,16 @@ import static uk.gov.dwp.uc.pairtest.domain.TicketTypeRequest.Type.ADULT;
 
 public class TicketServiceImplTest {
 
+    public static final TicketTypeRequest SINGLE_ADULT_TICKET_REQUEST = new TicketTypeRequest(ADULT, 1);
     private static final long VALID_ACCOUNT_ID = 1L;
+
     private final SeatReservationService seatReservationService = mock(SeatReservationService.class);
     private final TicketPaymentService ticketPaymentService = mock(TicketPaymentService.class);
     private final AccountValidator accountValidator = mock(AccountValidator.class);
+    private final TicketOrderFactory ticketOrderFactory = mock(TicketOrderFactory.class);
 
-    private final TicketServiceImpl underTest = new TicketServiceImpl(seatReservationService, ticketPaymentService, accountValidator);
+    private final TicketServiceImpl underTest = new TicketServiceImpl(seatReservationService, ticketPaymentService, accountValidator, ticketOrderFactory);
+
 
     @Before
     public void setUp() {
@@ -29,8 +37,8 @@ public class TicketServiceImplTest {
 
     @Test
     public void processesRequestSuccessfullyWithValidParameters() {
-        TicketTypeRequest ticketTypeRequest = new TicketTypeRequest(ADULT, 1);
-        underTest.purchaseTickets(VALID_ACCOUNT_ID, ticketTypeRequest);
+        when(ticketOrderFactory.toTicketOrder(List.of(SINGLE_ADULT_TICKET_REQUEST))).thenReturn(new TicketOrder(1));
+        underTest.purchaseTickets(VALID_ACCOUNT_ID, SINGLE_ADULT_TICKET_REQUEST);
 
         verify(ticketPaymentService).makePayment(VALID_ACCOUNT_ID, 0);
         verify(seatReservationService).reserveSeat(VALID_ACCOUNT_ID, 0);
@@ -38,8 +46,10 @@ public class TicketServiceImplTest {
 
     @Test
     public void shouldThrowIfThereAreMoreThan20TicketsInTheOrderFromOneTicketTypeRequest() {
+        TicketTypeRequest tickerRequestExceedingMaximum = new TicketTypeRequest(ADULT, 21);
+        when(ticketOrderFactory.toTicketOrder(List.of(tickerRequestExceedingMaximum))).thenReturn(new TicketOrder(21));
         try {
-            underTest.purchaseTickets(VALID_ACCOUNT_ID, new TicketTypeRequest(ADULT, 21));
+            underTest.purchaseTickets(VALID_ACCOUNT_ID, tickerRequestExceedingMaximum);
             fail("Should throw InvalidPurchaseException when more than 20 tickets ordered at once");
         } catch (InvalidPurchaseException exception) {
             verifyOrderIsNotProcessedByPaymentOrReservationService();
@@ -55,6 +65,7 @@ public class TicketServiceImplTest {
                 new TicketTypeRequest(ADULT, 5),
                 new TicketTypeRequest(ADULT, 5),
                 new TicketTypeRequest(ADULT, 5)};
+        when(ticketOrderFactory.toTicketOrder(List.of(ticketTypeRequests))).thenReturn(new TicketOrder(25));
         try {
             underTest.purchaseTickets(VALID_ACCOUNT_ID, ticketTypeRequests);
             fail("Should throw InvalidPurchaseException when more than 20 tickets ordered at once");
@@ -101,8 +112,10 @@ public class TicketServiceImplTest {
 
     @Test
     public void shouldThrowIfThereAreNoTicketsInTheTicketTypeRequest() {
+        TicketTypeRequest emptyTicketRequest = new TicketTypeRequest(ADULT, 0);
+        when(ticketOrderFactory.toTicketOrder(List.of(emptyTicketRequest))).thenReturn(new TicketOrder(0));
         try {
-            underTest.purchaseTickets(VALID_ACCOUNT_ID, new TicketTypeRequest(ADULT, 0));
+            underTest.purchaseTickets(VALID_ACCOUNT_ID, emptyTicketRequest);
             fail("Should throw InvalidPurchaseException when there are no tickets in the any TicketTypeRequests");
         } catch (InvalidPurchaseException exception) {
             verifyOrderIsNotProcessedByPaymentOrReservationService();

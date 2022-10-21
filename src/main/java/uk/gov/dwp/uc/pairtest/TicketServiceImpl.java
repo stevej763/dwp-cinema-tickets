@@ -3,26 +3,31 @@ package uk.gov.dwp.uc.pairtest;
 import thirdparty.paymentgateway.TicketPaymentService;
 import thirdparty.seatbooking.SeatReservationService;
 import uk.gov.dwp.uc.pairtest.domain.TicketOrder;
+import uk.gov.dwp.uc.pairtest.domain.TicketOrderFactory;
 import uk.gov.dwp.uc.pairtest.domain.TicketTypeRequest;
 import uk.gov.dwp.uc.pairtest.exception.InvalidPurchaseException;
 
 import java.util.List;
-import java.util.stream.Stream;
 
 
 public class TicketServiceImpl implements TicketService {
 
     private static final int MAXIMUM_TICKET_BOOKING_ALLOWANCE = 20;
+
     private final SeatReservationService seatReservationService;
     private final TicketPaymentService ticketPaymentService;
     private final AccountValidator accountValidator;
     private final TicketOrderFactory ticketOrderFactory;
 
-    public TicketServiceImpl(SeatReservationService seatReservationService, TicketPaymentService ticketPaymentService, AccountValidator accountValidator) {
+    public TicketServiceImpl(
+            SeatReservationService seatReservationService,
+            TicketPaymentService ticketPaymentService,
+            AccountValidator accountValidator,
+            TicketOrderFactory ticketOrderFactory) {
         this.seatReservationService = seatReservationService;
         this.ticketPaymentService = ticketPaymentService;
         this.accountValidator = accountValidator;
-        this.ticketOrderFactory = new TicketOrderFactory();
+        this.ticketOrderFactory = ticketOrderFactory;
     }
 
     @Override
