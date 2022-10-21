@@ -5,8 +5,8 @@ package uk.gov.dwp.uc.pairtest.domain;
  */
 public class TicketTypeRequest {
 
-    private int noOfTickets;
-    private Type type;
+    private final int noOfTickets;
+    private final Type type;
 
     public TicketTypeRequest(Type type, int noOfTickets) {
         this.type = type;
