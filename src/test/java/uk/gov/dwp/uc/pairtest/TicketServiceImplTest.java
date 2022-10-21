@@ -15,13 +15,11 @@ import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
 import static org.mockito.Mockito.*;
-import static uk.gov.dwp.uc.pairtest.domain.TicketTypeRequest.Type.ADULT;
 
 public class TicketServiceImplTest {
 
-    private final static TicketTypeRequest TICKET_REQUEST = mock(TicketTypeRequest.class);
-    private static final TicketTypeRequest SINGLE_ADULT_TICKET_REQUEST = new TicketTypeRequest(ADULT, 1);
     private static final long VALID_ACCOUNT_ID = 1L;
+    private final static TicketTypeRequest TICKET_REQUEST = mock(TicketTypeRequest.class);
 
     private final SeatReservationService seatReservationService = mock(SeatReservationService.class);
     private final TicketPaymentService ticketPaymentService = mock(TicketPaymentService.class);

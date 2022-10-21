@@ -59,4 +59,8 @@ public class TicketOrder {
     public String toString() {
         return ToStringBuilder.reflectionToString(this, SHORT_PREFIX_STYLE);
     }
+
+    public int getTotalSeatCountForReservation() {
+        return (int) (getAdultTicketCountAsLong() + getChildTicketCountAsLong());
+    }
 }

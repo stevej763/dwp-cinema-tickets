@@ -30,4 +30,9 @@ public class TicketOrderTest {
     public void returnsInfantTicketCountAsLong() {
         assertThat(underTest.getAdultTicketCountAsLong(), is(1L));
     }
+
+    @Test
+    public void returnsTotalCountOfTicketsThatRequireAReservedSeat() {
+        assertThat(underTest.getTotalSeatCountForReservation(), is(2));
+    }
 }

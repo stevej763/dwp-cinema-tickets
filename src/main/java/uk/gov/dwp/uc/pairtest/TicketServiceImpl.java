@@ -33,8 +33,7 @@ public class TicketServiceImpl implements TicketService {
         checkForEmptyArrayOfTicketTypeRequests(ticketTypeRequests);
         TicketOrder ticketOrder = orderValidator.createValidTicketOrder(List.of(ticketTypeRequests));
 
-        int ticketCountExcludingInfants = ticketOrder.getAdultTicketCountAsLong().intValue() + ticketOrder.getChildTicketCountAsLong().intValue();
-        seatReservationService.reserveSeat(accountId, ticketCountExcludingInfants);
+        seatReservationService.reserveSeat(accountId, ticketOrder.getTotalSeatCountForReservation());
         ticketPaymentService.makePayment(accountId, 0);
     }
 
