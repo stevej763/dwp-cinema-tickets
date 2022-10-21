@@ -4,8 +4,6 @@ import org.junit.Before;
 import org.junit.Test;
 import thirdparty.paymentgateway.TicketPaymentService;
 import thirdparty.seatbooking.SeatReservationService;
-import uk.gov.dwp.uc.pairtest.domain.TicketCount;
-import uk.gov.dwp.uc.pairtest.domain.TicketOrder;
 import uk.gov.dwp.uc.pairtest.domain.TicketTypeRequest;
 import uk.gov.dwp.uc.pairtest.exception.InvalidPurchaseException;
 
@@ -15,6 +13,7 @@ import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
 import static org.mockito.Mockito.*;
+import static uk.gov.dwp.uc.pairtest.TicketOrderTestHelper.aTicketOrder;
 
 public class TicketServiceImplTest {
 
@@ -39,7 +38,7 @@ public class TicketServiceImplTest {
 
     @Test
     public void reservesSeatSuccessfullyForASingleAdultTicket() {
-        when(orderValidator.createValidTicketOrder(List.of(TICKET_REQUEST))).thenReturn(aTickerOrder(1, 0, 0));
+        when(orderValidator.createValidTicketOrder(List.of(TICKET_REQUEST))).thenReturn(aTicketOrder(1, 0, 0));
         underTest.purchaseTickets(VALID_ACCOUNT_ID, TICKET_REQUEST);
 
         verify(seatReservationService).reserveSeat(VALID_ACCOUNT_ID, 1);
@@ -47,7 +46,7 @@ public class TicketServiceImplTest {
 
     @Test
     public void reservesSeatsSuccessfullyForAMultipleAdultTickets() {
-        when(orderValidator.createValidTicketOrder(List.of(TICKET_REQUEST))).thenReturn(aTickerOrder(20, 0, 0));
+        when(orderValidator.createValidTicketOrder(List.of(TICKET_REQUEST))).thenReturn(aTicketOrder(20, 0, 0));
 
         underTest.purchaseTickets(VALID_ACCOUNT_ID, TICKET_REQUEST);
 
@@ -56,7 +55,7 @@ public class TicketServiceImplTest {
 
     @Test
     public void reservesSeatsSuccessfullyForAnOrderWithAdultsAndChildren() {
-        when(orderValidator.createValidTicketOrder(List.of(TICKET_REQUEST))).thenReturn(aTickerOrder(5, 5, 0));
+        when(orderValidator.createValidTicketOrder(List.of(TICKET_REQUEST))).thenReturn(aTicketOrder(5, 5, 0));
 
         underTest.purchaseTickets(VALID_ACCOUNT_ID, TICKET_REQUEST);
 
@@ -65,7 +64,7 @@ public class TicketServiceImplTest {
 
     @Test
     public void reservesSeatsSuccessfullyForAnOrderWithAdultsChildrenAndInfants() {
-        when(orderValidator.createValidTicketOrder(List.of(TICKET_REQUEST))).thenReturn(aTickerOrder(5, 5, 5));
+        when(orderValidator.createValidTicketOrder(List.of(TICKET_REQUEST))).thenReturn(aTicketOrder(5, 5, 5));
 
         underTest.purchaseTickets(VALID_ACCOUNT_ID, TICKET_REQUEST);
 
@@ -123,9 +122,5 @@ public class TicketServiceImplTest {
     private void verifyOrderIsNotProcessedByPaymentOrReservationService() {
         verifyNoInteractions(ticketPaymentService);
         verifyNoInteractions(seatReservationService);
-    }
-
-    private TicketOrder aTickerOrder(int adultTicketCount, int childTicketCount, int infantTicketCount) {
-        return new TicketOrder(new TicketCount(adultTicketCount), new TicketCount(childTicketCount), new TicketCount(infantTicketCount));
     }
 }

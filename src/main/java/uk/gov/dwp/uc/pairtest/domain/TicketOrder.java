@@ -45,6 +45,10 @@ public class TicketOrder {
         return getAdultTicketCountAsLong() + getChildTicketCountAsLong() + getInfantTicketCountAsLong();
     }
 
+    public int getTotalSeatCountForReservation() {
+        return (int) (getAdultTicketCountAsLong() + getChildTicketCountAsLong());
+    }
+
     @Override
     public boolean equals(Object obj) {
         return EqualsBuilder.reflectionEquals(this, obj);
@@ -58,9 +62,5 @@ public class TicketOrder {
     @Override
     public String toString() {
         return ToStringBuilder.reflectionToString(this, SHORT_PREFIX_STYLE);
-    }
-
-    public int getTotalSeatCountForReservation() {
-        return (int) (getAdultTicketCountAsLong() + getChildTicketCountAsLong());
     }
 }

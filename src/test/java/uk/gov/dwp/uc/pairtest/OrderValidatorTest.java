@@ -10,6 +10,7 @@ import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+import static uk.gov.dwp.uc.pairtest.TicketOrderTestHelper.aTicketOrder;
 
 public class OrderValidatorTest {
 
@@ -115,7 +116,4 @@ public class OrderValidatorTest {
         }
     }
 
-    private TicketOrder aTicketOrder(int count, int count1, int count11) {
-        return new TicketOrder(new TicketCount(count), new TicketCount(count1), new TicketCount(count11));
-    }
 }
