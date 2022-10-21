@@ -20,7 +20,7 @@ import static uk.gov.dwp.uc.pairtest.domain.TicketTypeRequest.Type.CHILD;
 
 public class TicketServiceImplTest {
 
-    public static final TicketTypeRequest SINGLE_ADULT_TICKET_REQUEST = new TicketTypeRequest(ADULT, 1);
+    private static final TicketTypeRequest SINGLE_ADULT_TICKET_REQUEST = new TicketTypeRequest(ADULT, 1);
     private static final long VALID_ACCOUNT_ID = 1L;
 
     private final SeatReservationService seatReservationService = mock(SeatReservationService.class);
@@ -28,7 +28,12 @@ public class TicketServiceImplTest {
     private final AccountValidator accountValidator = mock(AccountValidator.class);
     private final TicketOrderFactory ticketOrderFactory = mock(TicketOrderFactory.class);
 
-    private final TicketServiceImpl underTest = new TicketServiceImpl(seatReservationService, ticketPaymentService, accountValidator, ticketOrderFactory);
+    private final TicketServiceImpl underTest = new TicketServiceImpl(
+            seatReservationService,
+            ticketPaymentService,
+            accountValidator,
+            ticketOrderFactory,
+            new OrderValidator());
 
     @Before
     public void setUp() {
