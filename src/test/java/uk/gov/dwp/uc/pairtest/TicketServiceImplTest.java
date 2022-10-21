@@ -13,12 +13,13 @@ import static org.mockito.Mockito.verify;
 
 public class TicketServiceImplTest {
 
-    private final TicketServiceImpl underTest = new TicketServiceImpl();
+    private final SeatReservationService seatReservationService = mock(SeatReservationService.class);
+    private final TicketPaymentService ticketPaymentService = mock(TicketPaymentService.class);
+
+    private final TicketServiceImpl underTest = new TicketServiceImpl(seatReservationService, ticketPaymentService);
 
     @Test
     public void processesRequestWhenAccountIdIsValid() {
-        SeatReservationService seatReservationService = mock(SeatReservationService.class);
-        TicketPaymentService ticketPaymentService = mock(TicketPaymentService.class);
 
         underTest.purchaseTickets(1L, null);
 
