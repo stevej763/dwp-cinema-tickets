@@ -23,6 +23,11 @@ public class TicketServiceImpl implements TicketService {
             throw new InvalidPurchaseException(message);
         }
 
+        if (ticketTypeRequests == null) {
+            String message = "Cannot process order due to no TicketTypeRequests being received";
+            throw new InvalidPurchaseException(message);
+        }
+
         seatReservationService.reserveSeat(accountId, 0);
         ticketPaymentService.makePayment(accountId, 0);
     }

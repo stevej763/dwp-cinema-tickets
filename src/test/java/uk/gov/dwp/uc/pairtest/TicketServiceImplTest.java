@@ -4,11 +4,14 @@ import org.hamcrest.core.Is;
 import org.junit.Test;
 import thirdparty.paymentgateway.TicketPaymentService;
 import thirdparty.seatbooking.SeatReservationService;
+import uk.gov.dwp.uc.pairtest.domain.TicketTypeRequest;
 import uk.gov.dwp.uc.pairtest.exception.InvalidPurchaseException;
 
 import static org.hamcrest.core.Is.*;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
+import static uk.gov.dwp.uc.pairtest.domain.TicketTypeRequest.*;
+import static uk.gov.dwp.uc.pairtest.domain.TicketTypeRequest.Type.*;
 
 public class TicketServiceImplTest {
 
@@ -19,8 +22,8 @@ public class TicketServiceImplTest {
 
     @Test
     public void processesRequestWhenAccountIdIsValid() {
-
-        underTest.purchaseTickets(1L, null);
+        TicketTypeRequest ticketTypeRequest = new TicketTypeRequest(ADULT, 0);
+        underTest.purchaseTickets(1L, ticketTypeRequest);
 
         verify(ticketPaymentService).makePayment(1L, 0);
         verify(seatReservationService).reserveSeat(1L, 0);
