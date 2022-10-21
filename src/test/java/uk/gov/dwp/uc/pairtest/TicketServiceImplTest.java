@@ -1,65 +1,49 @@
 package uk.gov.dwp.uc.pairtest;
 
-import org.hamcrest.core.Is;
+import org.junit.Before;
 import org.junit.Test;
 import thirdparty.paymentgateway.TicketPaymentService;
 import thirdparty.seatbooking.SeatReservationService;
 import uk.gov.dwp.uc.pairtest.domain.TicketTypeRequest;
 import uk.gov.dwp.uc.pairtest.exception.InvalidPurchaseException;
 
-import static org.hamcrest.core.Is.*;
-import static org.junit.Assert.*;
+import static org.hamcrest.core.Is.is;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.fail;
 import static org.mockito.Mockito.*;
-import static uk.gov.dwp.uc.pairtest.domain.TicketTypeRequest.*;
-import static uk.gov.dwp.uc.pairtest.domain.TicketTypeRequest.Type.*;
+import static uk.gov.dwp.uc.pairtest.domain.TicketTypeRequest.Type.ADULT;
 
 public class TicketServiceImplTest {
 
     private final SeatReservationService seatReservationService = mock(SeatReservationService.class);
     private final TicketPaymentService ticketPaymentService = mock(TicketPaymentService.class);
+    private final AccountValidator accountValidator = mock(AccountValidator.class);
 
-    private final TicketServiceImpl underTest = new TicketServiceImpl(seatReservationService, ticketPaymentService);
+    private final TicketServiceImpl underTest = new TicketServiceImpl(seatReservationService, ticketPaymentService, accountValidator);
+
+    @Before
+    public void setUp() {
+        when(accountValidator.isValidAccount(any())).thenReturn(true);
+    }
 
     @Test
-    public void processesRequestWhenAccountIdIsValid() {
+    public void processesRequestSuccessfullyWithValidParameters() {
         TicketTypeRequest ticketTypeRequest = new TicketTypeRequest(ADULT, 0);
         underTest.purchaseTickets(1L, ticketTypeRequest);
 
         verify(ticketPaymentService).makePayment(1L, 0);
         verify(seatReservationService).reserveSeat(1L, 0);
-
     }
 
     @Test
-    public void shouldThrowWhenAccountIdIsNull() {
+    public void shouldThrowWhenAccountIdIsInvalid() {
+        when(accountValidator.isValidAccount(any())).thenReturn(false);
         try {
             underTest.purchaseTickets(null);
             fail("Should throw InvalidPurchaseException when accountID is null");
         } catch (InvalidPurchaseException exception) {
             verifyOrderIsNotProcessedByPaymentOrReservationService();
             assertThat(exception.getMessage(), is("Invalid account ID: accountId=null"));
-        }
-    }
-
-    @Test
-    public void shouldThrowWhenAccountIdIsZero() {
-        try {
-            underTest.purchaseTickets(0L);
-            fail("Should throw InvalidPurchaseException when accountID is less than 1");
-        } catch (InvalidPurchaseException exception) {
-            verifyOrderIsNotProcessedByPaymentOrReservationService();
-            assertThat(exception.getMessage(), is("Invalid account ID: accountId=0"));
-        }
-    }
-
-    @Test
-    public void shouldThrowWhenAccountIdIsNegative() {
-        try {
-            underTest.purchaseTickets(-1L);
-            fail("Should throw InvalidPurchaseException when accountID is less than 1");
-        } catch (InvalidPurchaseException exception) {
-            verifyOrderIsNotProcessedByPaymentOrReservationService();
-            assertThat(exception.getMessage(), is("Invalid account ID: accountId=-1"));
         }
     }
 

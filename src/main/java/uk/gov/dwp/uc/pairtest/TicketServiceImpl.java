@@ -10,10 +10,12 @@ public class TicketServiceImpl implements TicketService {
 
     private final SeatReservationService seatReservationService;
     private final TicketPaymentService ticketPaymentService;
+    private final AccountValidator accountValidator;
 
-    public TicketServiceImpl(SeatReservationService seatReservationService, TicketPaymentService ticketPaymentService) {
+    public TicketServiceImpl(SeatReservationService seatReservationService, TicketPaymentService ticketPaymentService, AccountValidator accountValidator) {
         this.seatReservationService = seatReservationService;
         this.ticketPaymentService = ticketPaymentService;
+        this.accountValidator = accountValidator;
     }
 
     @Override
@@ -33,7 +35,7 @@ public class TicketServiceImpl implements TicketService {
     }
 
     private void checkAccountIdIsValid(Long accountId) {
-        if (accountId == null || accountId <= 0) {
+        if (!accountValidator.isValidAccount(accountId)) {
             String message = String.format("Invalid account ID: accountId=%s", accountId);
             throw new InvalidPurchaseException(message);
         }
