@@ -38,7 +38,6 @@ public class TicketServiceImplTest {
 
     @Test
     public void shouldThrowIfThereAreMoreThan20TicketsInTheOrder() {
-
         try {
             underTest.purchaseTickets(VALID_ACCOUNT_ID, new TicketTypeRequest(ADULT, 21));
             fail("Should throw InvalidPurchaseException when more than 20 tickets ordered at once");

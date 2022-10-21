@@ -5,12 +5,12 @@ import thirdparty.seatbooking.SeatReservationService;
 import uk.gov.dwp.uc.pairtest.domain.TicketTypeRequest;
 import uk.gov.dwp.uc.pairtest.exception.InvalidPurchaseException;
 
-import java.util.List;
 import java.util.stream.Stream;
 
 
 public class TicketServiceImpl implements TicketService {
 
+    private static final int MAXIMUM_TICKET_BOOKING_ALLOWANCE = 20;
     private final SeatReservationService seatReservationService;
     private final TicketPaymentService ticketPaymentService;
     private final AccountValidator accountValidator;
@@ -25,14 +25,17 @@ public class TicketServiceImpl implements TicketService {
     public void purchaseTickets(Long accountId, TicketTypeRequest... ticketTypeRequests) throws InvalidPurchaseException {
         checkAccountIdIsValid(accountId);
         checkForEmptyArrayOfTicketTypeRequests(ticketTypeRequests);
-
-        long totalNumberOfTickets = Stream.of(ticketTypeRequests).mapToInt(TicketTypeRequest::getNoOfTickets).summaryStatistics().getSum();
-        if (totalNumberOfTickets > 20) {
-            throw new InvalidPurchaseException("Invalid order: You cannot purchase more than 20 tickets in one order");
-        }
+        checkRequestDoesNotExceedMaximumTicketOrderCount(ticketTypeRequests);
 
         seatReservationService.reserveSeat(accountId, 0);
         ticketPaymentService.makePayment(accountId, 0);
+    }
+
+    private void checkAccountIdIsValid(Long accountId) {
+        if (!accountValidator.isValidAccount(accountId)) {
+            String message = String.format("Invalid account ID: accountId=%s", accountId);
+            throw new InvalidPurchaseException(message);
+        }
     }
 
     private void checkForEmptyArrayOfTicketTypeRequests(TicketTypeRequest[] ticketTypeRequests) {
@@ -42,9 +45,10 @@ public class TicketServiceImpl implements TicketService {
         }
     }
 
-    private void checkAccountIdIsValid(Long accountId) {
-        if (!accountValidator.isValidAccount(accountId)) {
-            String message = String.format("Invalid account ID: accountId=%s", accountId);
+    private void checkRequestDoesNotExceedMaximumTicketOrderCount(TicketTypeRequest[] ticketTypeRequests) {
+        long totalNumberOfTickets = Stream.of(ticketTypeRequests).mapToInt(TicketTypeRequest::getNoOfTickets).summaryStatistics().getSum();
+        if (totalNumberOfTickets > MAXIMUM_TICKET_BOOKING_ALLOWANCE) {
+            String message = String.format("Invalid order: You cannot purchase more than %s tickets in one order", MAXIMUM_TICKET_BOOKING_ALLOWANCE);
             throw new InvalidPurchaseException(message);
         }
     }
