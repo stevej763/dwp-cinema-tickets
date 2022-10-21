@@ -12,6 +12,7 @@ import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
 import static org.mockito.Mockito.*;
 import static uk.gov.dwp.uc.pairtest.domain.TicketTypeRequest.Type.ADULT;
+import static uk.gov.dwp.uc.pairtest.domain.TicketTypeRequest.Type.CHILD;
 
 public class TicketServiceImplTest {
 
@@ -37,9 +38,26 @@ public class TicketServiceImplTest {
     }
 
     @Test
-    public void shouldThrowIfThereAreMoreThan20TicketsInTheOrder() {
+    public void shouldThrowIfThereAreMoreThan20TicketsInTheOrderFromOneTicketTypeRequest() {
         try {
             underTest.purchaseTickets(VALID_ACCOUNT_ID, new TicketTypeRequest(ADULT, 21));
+            fail("Should throw InvalidPurchaseException when more than 20 tickets ordered at once");
+        } catch (InvalidPurchaseException exception) {
+            verifyOrderIsNotProcessedByPaymentOrReservationService();
+            assertThat(exception.getMessage(), is("Invalid order: You cannot purchase more than 20 tickets in one order"));
+        }
+    }
+
+    @Test
+    public void shouldThrowIfThereAreMoreThan20TicketsInTheOrderAcrossMultipleTicketTypeRequests() {
+        TicketTypeRequest[] ticketTypeRequests = new TicketTypeRequest[]{
+                new TicketTypeRequest(ADULT, 5),
+                new TicketTypeRequest(ADULT, 5),
+                new TicketTypeRequest(ADULT, 5),
+                new TicketTypeRequest(ADULT, 5),
+                new TicketTypeRequest(ADULT, 5)};
+        try {
+            underTest.purchaseTickets(VALID_ACCOUNT_ID, ticketTypeRequests);
             fail("Should throw InvalidPurchaseException when more than 20 tickets ordered at once");
         } catch (InvalidPurchaseException exception) {
             verifyOrderIsNotProcessedByPaymentOrReservationService();
