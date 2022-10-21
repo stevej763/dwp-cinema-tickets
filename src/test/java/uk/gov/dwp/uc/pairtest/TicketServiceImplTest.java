@@ -8,8 +8,7 @@ import uk.gov.dwp.uc.pairtest.exception.InvalidPurchaseException;
 
 import static org.hamcrest.core.Is.*;
 import static org.junit.Assert.*;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.*;
 
 public class TicketServiceImplTest {
 
@@ -27,12 +26,14 @@ public class TicketServiceImplTest {
         verify(seatReservationService).reserveSeat(1L, 0);
 
     }
+
     @Test
     public void shouldThrowWhenAccountIdIsNull() {
         try {
             underTest.purchaseTickets(null, null);
             fail("Should throw InvalidPurchaseException when accountID is null");
         } catch (InvalidPurchaseException exception) {
+            verifyOrderIsNotProcessedByPaymentOrReservationService();
             assertThat(exception.getMessage(), is("Invalid account ID: accountId=null"));
         }
     }
@@ -43,6 +44,7 @@ public class TicketServiceImplTest {
             underTest.purchaseTickets(0L, null);
             fail("Should throw InvalidPurchaseException when accountID is less than 1");
         } catch (InvalidPurchaseException exception) {
+            verifyOrderIsNotProcessedByPaymentOrReservationService();
             assertThat(exception.getMessage(), is("Invalid account ID: accountId=0"));
         }
     }
@@ -53,7 +55,13 @@ public class TicketServiceImplTest {
             underTest.purchaseTickets(-1L, null);
             fail("Should throw InvalidPurchaseException when accountID is less than 1");
         } catch (InvalidPurchaseException exception) {
+            verifyOrderIsNotProcessedByPaymentOrReservationService();
             assertThat(exception.getMessage(), is("Invalid account ID: accountId=-1"));
         }
+    }
+
+    private void verifyOrderIsNotProcessedByPaymentOrReservationService() {
+        verifyNoInteractions(ticketPaymentService);
+        verifyNoInteractions(seatReservationService);
     }
 }
