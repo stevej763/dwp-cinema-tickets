@@ -39,12 +39,11 @@ public class TicketServiceImplTest {
     }
 
     @Test
-    public void processesRequestSuccessfullyForASingleAdultTicket() {
+    public void reservesSeatSuccessfullyForASingleAdultTicket() {
         when(orderValidator.checkForValidTicketOrder(List.of(SINGLE_ADULT_TICKET_REQUEST))).thenReturn(new TicketOrder(new TicketCount(1), null, null));
         underTest.purchaseTickets(VALID_ACCOUNT_ID, SINGLE_ADULT_TICKET_REQUEST);
 
-        verify(seatReservationService).reserveSeat(VALID_ACCOUNT_ID, 0);
-        verify(ticketPaymentService).makePayment(VALID_ACCOUNT_ID, 0);
+        verify(seatReservationService).reserveSeat(VALID_ACCOUNT_ID, 1);
     }
 
     @Test

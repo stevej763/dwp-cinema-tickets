@@ -15,6 +15,7 @@ public class OrderValidatorTest {
 
     private static final TicketTypeRequest TICKET_TYPE_REQUEST = mock(TicketTypeRequest.class);
     private static final List<TicketTypeRequest> TICKET_REQUEST_LIST = List.of(TICKET_TYPE_REQUEST);
+
     private final TicketOrderFactory ticketOrderFactory = mock(TicketOrderFactory.class);
 
     private final OrderValidator underTest = new OrderValidator(ticketOrderFactory);
