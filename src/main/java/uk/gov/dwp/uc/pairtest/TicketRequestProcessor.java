@@ -8,40 +8,48 @@ import uk.gov.dwp.uc.pairtest.exception.InvalidPurchaseException;
 import java.util.List;
 
 
-public class OrderValidator {
+public class TicketRequestProcessor {
 
-    private static final int MAXIMUM_TICKET_BOOKING_ALLOWANCE = 20;
+    private static final long MAXIMUM_TICKET_BOOKING_ALLOWANCE = 20L;
+    private static final long MINIMUM_TICKET_COUNT = 1L;
+    private static final long MINIMUM_ADULT_TICKET_COUNT = 1L;
+
     private final TicketOrderFactory ticketOrderFactory;
 
-    public OrderValidator(TicketOrderFactory ticketOrderFactory) {
+    public TicketRequestProcessor(TicketOrderFactory ticketOrderFactory) {
         this.ticketOrderFactory = ticketOrderFactory;
     }
 
     public TicketOrder createValidTicketOrder(List<TicketTypeRequest> request) throws InvalidPurchaseException {
         TicketOrder ticketOrder = ticketOrderFactory.toTicketOrder(request);
-        checkRequestHasAtLeastOneValidTicket(ticketOrder.getTotalTicketCount());
-        checkForAtLeastOneAdultTicket(ticketOrder);
-        checkRequestDoesNotExceedMaximumTicketOrderCount(ticketOrder.getTotalTicketCount());
+        checkRequestHasValidTicketCount(ticketOrder);
         checkThereIsAtLeastOneAdultForEveryInfant(ticketOrder);
         return ticketOrder;
     }
 
-    private void checkRequestHasAtLeastOneValidTicket(long totalNumberOfTickets) {
-        if (totalNumberOfTickets < 1) {
+    private void checkRequestHasValidTicketCount(TicketOrder ticketOrder) {
+        hasMinimumOfOneTicket(ticketOrder);
+        hasAtLeastOneAdultTicketInTheOrder(ticketOrder);
+        checkRequestDoesNotExceedMaximumTicketOrderCount(ticketOrder);
+
+    }
+
+    private void hasMinimumOfOneTicket(TicketOrder ticketOrder) {
+        if (ticketOrder.getTotalTicketCount() < MINIMUM_TICKET_COUNT) {
             String message = "Invalid order: cannot process order with no tickets";
             throw new InvalidPurchaseException(message);
         }
     }
 
-    private void checkForAtLeastOneAdultTicket(TicketOrder ticketOrder) {
-        if (ticketOrder.getAdultTicketCountAsLong() < 1) {
+    private void hasAtLeastOneAdultTicketInTheOrder(TicketOrder ticketOrder) {
+        if (ticketOrder.getAdultTicketCountAsLong() < MINIMUM_ADULT_TICKET_COUNT) {
             String message = "Invalid order: You must order at least one adult ticket";
             throw new InvalidPurchaseException(message);
         }
     }
 
-    private void checkRequestDoesNotExceedMaximumTicketOrderCount(long totalNumberOfTickets) {
-        if (totalNumberOfTickets > MAXIMUM_TICKET_BOOKING_ALLOWANCE) {
+    private void checkRequestDoesNotExceedMaximumTicketOrderCount(TicketOrder ticketOrder) {
+        if (ticketOrder.getTotalTicketCount() > MAXIMUM_TICKET_BOOKING_ALLOWANCE) {
             String message = String.format("Invalid order: You cannot purchase more than %s tickets in one order", MAXIMUM_TICKET_BOOKING_ALLOWANCE);
             throw new InvalidPurchaseException(message);
         }

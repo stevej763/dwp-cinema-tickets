@@ -12,14 +12,14 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static uk.gov.dwp.uc.pairtest.TicketOrderTestHelper.aTicketOrder;
 
-public class OrderValidatorTest {
+public class TicketRequestProcessorTest {
 
     private static final TicketTypeRequest TICKET_TYPE_REQUEST = mock(TicketTypeRequest.class);
     private static final List<TicketTypeRequest> TICKET_REQUEST_LIST = List.of(TICKET_TYPE_REQUEST);
 
     private final TicketOrderFactory ticketOrderFactory = mock(TicketOrderFactory.class);
 
-    private final OrderValidator underTest = new OrderValidator(ticketOrderFactory);
+    private final TicketRequestProcessor underTest = new TicketRequestProcessor(ticketOrderFactory);
 
     @Test
     public void returnsTicketOrderForSingleAdult() {
@@ -115,5 +115,4 @@ public class OrderValidatorTest {
             assertThat(exception.getMessage(), is("Invalid order: there must be at least one adult for every infant"));
         }
     }
-
 }

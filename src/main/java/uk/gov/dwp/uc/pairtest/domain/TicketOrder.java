@@ -29,15 +29,15 @@ public class TicketOrder {
     }
 
     public Long getAdultTicketCountAsLong() {
-        return adultTicketCount.getNumberOfTickets();
+        return getAdultTicketCount().getNumberOfTickets();
     }
 
     public Long getChildTicketCountAsLong() {
-        return childTicketCount.getNumberOfTickets();
+        return getChildTicketCount().getNumberOfTickets();
     }
 
     public Long getInfantTicketCountAsLong() {
-        return infantTicketCount.getNumberOfTickets();
+        return getInfantTicketCount().getNumberOfTickets();
     }
 
     public Long getTotalTicketCount() {

@@ -1,7 +1,7 @@
 package uk.gov.dwp.uc.pairtest;
 
 import org.junit.Test;
-import uk.gov.dwp.uc.pairtest.domain.OrderTotal;
+import uk.gov.dwp.uc.pairtest.domain.OrderTotalPrice;
 
 import static org.hamcrest.core.Is.*;
 import static org.junit.Assert.*;
@@ -13,59 +13,59 @@ public class PaymentCalculatorTest {
     public void canCalculateCostOfOneAdultTicket() {
         PaymentCalculator underTest = new PaymentCalculator();
 
-        OrderTotal result = underTest.calculateOrderTotalPrice(aTicketOrder(1, 0, 0));
+        OrderTotalPrice result = underTest.calculateOrderTotalPrice(aTicketOrder(1, 0, 0));
 
-        OrderTotal expectedOrderTotal = new OrderTotal(20);
-        assertThat(result, is(expectedOrderTotal));
+        OrderTotalPrice expectedOrderTotalPrice = new OrderTotalPrice(20);
+        assertThat(result, is(expectedOrderTotalPrice));
     }
 
     @Test
     public void canCalculateCostOfMultipleAdultTickets() {
         PaymentCalculator underTest = new PaymentCalculator();
 
-        OrderTotal result = underTest.calculateOrderTotalPrice(aTicketOrder(20, 0, 0));
+        OrderTotalPrice result = underTest.calculateOrderTotalPrice(aTicketOrder(20, 0, 0));
 
-        OrderTotal expectedOrderTotal = new OrderTotal(400);
-        assertThat(result, is(expectedOrderTotal));
+        OrderTotalPrice expectedOrderTotalPrice = new OrderTotalPrice(400);
+        assertThat(result, is(expectedOrderTotalPrice));
     }
 
     @Test
     public void canCalculateCostOfOneChildTicket() {
         PaymentCalculator underTest = new PaymentCalculator();
 
-        OrderTotal result = underTest.calculateOrderTotalPrice(aTicketOrder(0, 1, 0));
+        OrderTotalPrice result = underTest.calculateOrderTotalPrice(aTicketOrder(0, 1, 0));
 
-        OrderTotal expectedOrderTotal = new OrderTotal(10);
-        assertThat(result, is(expectedOrderTotal));
+        OrderTotalPrice expectedOrderTotalPrice = new OrderTotalPrice(10);
+        assertThat(result, is(expectedOrderTotalPrice));
     }
 
     @Test
     public void canCalculateCostOfMultipleChildTickets() {
         PaymentCalculator underTest = new PaymentCalculator();
 
-        OrderTotal result = underTest.calculateOrderTotalPrice(aTicketOrder(0, 20, 0));
+        OrderTotalPrice result = underTest.calculateOrderTotalPrice(aTicketOrder(0, 20, 0));
 
-        OrderTotal expectedOrderTotal = new OrderTotal(200);
-        assertThat(result, is(expectedOrderTotal));
+        OrderTotalPrice expectedOrderTotalPrice = new OrderTotalPrice(200);
+        assertThat(result, is(expectedOrderTotalPrice));
     }
 
     @Test
     public void infantTicketsDoNotIncreasePrice() {
         PaymentCalculator underTest = new PaymentCalculator();
 
-        OrderTotal result = underTest.calculateOrderTotalPrice(aTicketOrder(0, 0, 20));
+        OrderTotalPrice result = underTest.calculateOrderTotalPrice(aTicketOrder(0, 0, 20));
 
-        OrderTotal expectedOrderTotal = new OrderTotal(0);
-        assertThat(result, is(expectedOrderTotal));
+        OrderTotalPrice expectedOrderTotalPrice = new OrderTotalPrice(0);
+        assertThat(result, is(expectedOrderTotalPrice));
     }
 
     @Test
     public void canCalculatePriceForAMixOfDifferentTicketTypes() {
         PaymentCalculator underTest = new PaymentCalculator();
 
-        OrderTotal result = underTest.calculateOrderTotalPrice(aTicketOrder(10, 5, 5));
+        OrderTotalPrice result = underTest.calculateOrderTotalPrice(aTicketOrder(10, 5, 5));
 
-        OrderTotal expectedOrderTotal = new OrderTotal(250);
-        assertThat(result, is(expectedOrderTotal));
+        OrderTotalPrice expectedOrderTotalPrice = new OrderTotalPrice(250);
+        assertThat(result, is(expectedOrderTotalPrice));
     }
 }

@@ -27,14 +27,14 @@ public class TicketOrderFactory {
                 .collect(toList());
     }
 
+    private boolean isTicketTypeOf(Type type, TicketTypeRequest request) {
+        return type.equals(request.getTicketType());
+    }
+
     private long getSumOfTickets(List<TicketTypeRequest> filteredRequests) {
         return filteredRequests.stream()
                 .mapToInt(TicketTypeRequest::getNumberOfTickets)
                 .summaryStatistics()
                 .getSum();
-    }
-
-    private boolean isTicketTypeOf(Type type, TicketTypeRequest request) {
-        return type.equals(request.getTicketType());
     }
 }

@@ -17,15 +17,20 @@ public class TicketServiceComponentTest {
 
     private final AccountValidator accountValidator = new AccountValidator();
     private final TicketOrderFactory ticketOrderFactory = new TicketOrderFactory();
-    private final OrderValidator orderValidator = new OrderValidator(ticketOrderFactory);
+    private final TicketRequestProcessor ticketRequestProcessor = new TicketRequestProcessor(ticketOrderFactory);
     private final PaymentCalculator paymentCalculator = new PaymentCalculator();
+    private final SeatReservationService seatReservationService = mock(SeatReservationService.class);
+    private final TicketPaymentService ticketPaymentService = mock(TicketPaymentService.class);
+
+    private final TicketService ticketService = new TicketServiceImpl(
+            accountValidator,
+            ticketRequestProcessor,
+            paymentCalculator,
+            seatReservationService,
+            ticketPaymentService);
 
     @Test
     public void canBookASetOfTickets() {
-        SeatReservationService seatReservationService = mock(SeatReservationService.class);
-        TicketPaymentService ticketPaymentService = mock(TicketPaymentService.class);
-        TicketService ticketService = new TicketServiceImpl(seatReservationService, ticketPaymentService, accountValidator, orderValidator, paymentCalculator);
-
         TicketTypeRequest[] ticketTypeRequests = anArrayOfTicketTypeRequests(5, 5, 5);
 
         ticketService.purchaseTickets(1L, ticketTypeRequests);
@@ -36,12 +41,7 @@ public class TicketServiceComponentTest {
 
     @Test
     public void doesNotBookTicketsIfThereIsAnInvalidRequest() {
-        SeatReservationService seatReservationService = mock(SeatReservationService.class);
-        TicketPaymentService ticketPaymentService = mock(TicketPaymentService.class);
-        TicketService ticketService = new TicketServiceImpl(seatReservationService, ticketPaymentService, accountValidator, orderValidator, paymentCalculator);
-
         TicketTypeRequest[] ticketTypeRequests = anArrayOfTicketTypeRequests(500, 500, 500);
-
         try {
             ticketService.purchaseTickets(1L, ticketTypeRequests);
         } catch (InvalidPurchaseException invalidPurchaseException) {
@@ -51,7 +51,10 @@ public class TicketServiceComponentTest {
         }
     }
 
-    private TicketTypeRequest[] anArrayOfTicketTypeRequests(int numberOfAdultTickets, int numberOfChildTickets, int numberOfInfantTickets) {
+    private TicketTypeRequest[] anArrayOfTicketTypeRequests(
+            int numberOfAdultTickets,
+            int numberOfChildTickets,
+            int numberOfInfantTickets) {
         return new TicketTypeRequest[]{
                 new TicketTypeRequest(ADULT, numberOfAdultTickets),
                 new TicketTypeRequest(CHILD, numberOfChildTickets),
