@@ -1,4 +1,4 @@
-package uk.gov.dwp.uc.pairtest;
+package uk.gov.dwp.uc.pairtest.services;
 
 import thirdparty.paymentgateway.TicketPaymentService;
 import thirdparty.seatbooking.SeatReservationService;

@@ -1,13 +1,16 @@
-package uk.gov.dwp.uc.pairtest;
+package uk.gov.dwp.uc.pairtest.services;
 
 import org.junit.Test;
-import uk.gov.dwp.uc.pairtest.domain.*;
+import uk.gov.dwp.uc.pairtest.domain.TicketOrder;
+import uk.gov.dwp.uc.pairtest.domain.TicketOrderFactory;
+import uk.gov.dwp.uc.pairtest.domain.TicketTypeRequest;
 import uk.gov.dwp.uc.pairtest.exception.InvalidPurchaseException;
 
 import java.util.List;
 
 import static org.hamcrest.core.Is.is;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.fail;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static uk.gov.dwp.uc.pairtest.helpers.TicketOrderTestHelper.aTicketOrder;

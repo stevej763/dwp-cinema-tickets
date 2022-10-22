@@ -1,7 +1,8 @@
-package uk.gov.dwp.uc.pairtest;
+package uk.gov.dwp.uc.pairtest.services;
 
 import org.junit.Test;
 import uk.gov.dwp.uc.pairtest.domain.OrderTotalPrice;
+import uk.gov.dwp.uc.pairtest.services.PaymentCalculator;
 
 import static org.hamcrest.core.Is.*;
 import static org.junit.Assert.*;

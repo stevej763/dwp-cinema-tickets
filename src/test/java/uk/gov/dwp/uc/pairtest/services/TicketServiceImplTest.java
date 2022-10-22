@@ -1,4 +1,4 @@
-package uk.gov.dwp.uc.pairtest;
+package uk.gov.dwp.uc.pairtest.services;
 
 import org.junit.Before;
 import org.junit.Test;
