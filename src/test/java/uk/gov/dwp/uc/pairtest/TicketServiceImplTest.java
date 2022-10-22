@@ -21,7 +21,7 @@ public class TicketServiceImplTest {
 
     private static final long VALID_ACCOUNT_ID = 1L;
     private final static TicketTypeRequest TICKET_REQUEST = mock(TicketTypeRequest.class);
-    public static final OrderTotalPrice ORDER_TOTAL = mock(OrderTotalPrice.class);
+    private static final OrderTotalPrice ORDER_TOTAL = mock(OrderTotalPrice.class);
 
     private final SeatReservationService seatReservationService = mock(SeatReservationService.class);
     private final TicketPaymentService ticketPaymentService = mock(TicketPaymentService.class);
