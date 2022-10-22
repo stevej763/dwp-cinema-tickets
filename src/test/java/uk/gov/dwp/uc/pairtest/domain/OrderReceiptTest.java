@@ -4,7 +4,7 @@ import org.junit.Test;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
-import static uk.gov.dwp.uc.pairtest.TicketOrderTestHelper.aTicketOrder;
+import static uk.gov.dwp.uc.pairtest.helpers.TicketOrderTestHelper.aTicketOrder;
 
 public class OrderReceiptTest {
 

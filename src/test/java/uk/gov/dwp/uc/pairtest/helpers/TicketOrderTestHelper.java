@@ -1,4 +1,4 @@
-package uk.gov.dwp.uc.pairtest;
+package uk.gov.dwp.uc.pairtest.helpers;
 
 import uk.gov.dwp.uc.pairtest.domain.TicketCount;
 import uk.gov.dwp.uc.pairtest.domain.TicketOrder;

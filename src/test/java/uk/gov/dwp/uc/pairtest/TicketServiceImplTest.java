@@ -15,7 +15,7 @@ import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
 import static org.mockito.Mockito.*;
-import static uk.gov.dwp.uc.pairtest.TicketOrderTestHelper.aTicketOrder;
+import static uk.gov.dwp.uc.pairtest.helpers.TicketOrderTestHelper.aTicketOrder;
 
 public class TicketServiceImplTest {
 

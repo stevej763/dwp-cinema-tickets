@@ -5,7 +5,7 @@ import uk.gov.dwp.uc.pairtest.domain.OrderTotalPrice;
 
 import static org.hamcrest.core.Is.*;
 import static org.junit.Assert.*;
-import static uk.gov.dwp.uc.pairtest.TicketOrderTestHelper.aTicketOrder;
+import static uk.gov.dwp.uc.pairtest.helpers.TicketOrderTestHelper.aTicketOrder;
 
 public class PaymentCalculatorTest {
 

@@ -10,7 +10,7 @@ import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-import static uk.gov.dwp.uc.pairtest.TicketOrderTestHelper.aTicketOrder;
+import static uk.gov.dwp.uc.pairtest.helpers.TicketOrderTestHelper.aTicketOrder;
 
 public class TicketRequestProcessorTest {
 
