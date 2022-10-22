@@ -20,6 +20,7 @@ import static uk.gov.dwp.uc.pairtest.TicketOrderTestHelper.aTicketOrder;
 public class TicketServiceImplTest {
 
     private static final long VALID_ACCOUNT_ID = 1L;
+    private static final int AMOUNT_TO_PAY = 1;
     private final static TicketTypeRequest TICKET_REQUEST = mock(TicketTypeRequest.class);
     private static final OrderTotalPrice ORDER_TOTAL = mock(OrderTotalPrice.class);
 
@@ -39,18 +40,21 @@ public class TicketServiceImplTest {
     @Before
     public void setUp() {
         when(accountValidator.isValidAccount(any())).thenReturn(true);
+        when(ORDER_TOTAL.getPaymentAmount()).thenReturn(AMOUNT_TO_PAY);
     }
 
     @Test
-    public void ChargesPaymentService() {
+    public void chargesPaymentServiceForBookedSeats() {
         int expectedPaymentAmount = 250;
+        OrderTotalPrice expectedTotalPrice = new OrderTotalPrice(expectedPaymentAmount);
         TicketOrder ticketOrder = aTicketOrder(10, 5, 0);
 
         when(ticketRequestProcessor.createValidTicketOrder(List.of(TICKET_REQUEST))).thenReturn(ticketOrder);
-        when(paymentCalculator.calculateOrderTotalPrice(ticketOrder)).thenReturn(new OrderTotalPrice(expectedPaymentAmount));
+        when(paymentCalculator.calculateOrderTotalPrice(ticketOrder)).thenReturn(expectedTotalPrice);
 
         underTest.purchaseTickets(VALID_ACCOUNT_ID, TICKET_REQUEST);
 
+        verify(seatReservationService).reserveSeat(VALID_ACCOUNT_ID, 15);
         verify(ticketPaymentService).makePayment(VALID_ACCOUNT_ID, expectedPaymentAmount);
     }
 
@@ -62,6 +66,7 @@ public class TicketServiceImplTest {
         underTest.purchaseTickets(VALID_ACCOUNT_ID, TICKET_REQUEST);
 
         verify(seatReservationService).reserveSeat(VALID_ACCOUNT_ID, 1);
+        verify(ticketPaymentService).makePayment(VALID_ACCOUNT_ID, AMOUNT_TO_PAY);
     }
 
     @Test
@@ -73,6 +78,7 @@ public class TicketServiceImplTest {
         underTest.purchaseTickets(VALID_ACCOUNT_ID, TICKET_REQUEST);
 
         verify(seatReservationService).reserveSeat(VALID_ACCOUNT_ID, 20);
+        verify(ticketPaymentService).makePayment(VALID_ACCOUNT_ID, AMOUNT_TO_PAY);
     }
 
     @Test
@@ -84,6 +90,7 @@ public class TicketServiceImplTest {
         underTest.purchaseTickets(VALID_ACCOUNT_ID, TICKET_REQUEST);
 
         verify(seatReservationService).reserveSeat(VALID_ACCOUNT_ID, 10);
+        verify(ticketPaymentService).makePayment(VALID_ACCOUNT_ID, AMOUNT_TO_PAY);
     }
 
     @Test
@@ -95,6 +102,7 @@ public class TicketServiceImplTest {
         underTest.purchaseTickets(VALID_ACCOUNT_ID, TICKET_REQUEST);
 
         verify(seatReservationService).reserveSeat(VALID_ACCOUNT_ID, 10);
+        verify(ticketPaymentService).makePayment(VALID_ACCOUNT_ID, AMOUNT_TO_PAY);
     }
 
     @Test
@@ -138,6 +146,17 @@ public class TicketServiceImplTest {
         TicketTypeRequest[] ticketTypeRequests = new TicketTypeRequest[0];
         try {
             underTest.purchaseTickets(VALID_ACCOUNT_ID, ticketTypeRequests);
+            fail("Should throw InvalidPurchaseException when TicketTypeRequests is empty array");
+        } catch (InvalidPurchaseException exception) {
+            verifyOrderIsNotProcessedByPaymentOrReservationService();
+            assertThat(exception.getMessage(), is("Invalid order: Cannot process order due to no TicketTypeRequests being received"));
+        }
+    }
+
+    @Test
+    public void shouldThrowWhenNoTicketTypeRequestProvided() {
+        try {
+            underTest.purchaseTickets(VALID_ACCOUNT_ID);
             fail("Should throw InvalidPurchaseException when TicketTypeRequests is empty array");
         } catch (InvalidPurchaseException exception) {
             verifyOrderIsNotProcessedByPaymentOrReservationService();
